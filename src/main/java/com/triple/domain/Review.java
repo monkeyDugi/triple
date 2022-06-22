@@ -28,6 +28,17 @@ public class Review extends BaseTimeEntity {
     @JoinColumn(name = "PLACE_ID", nullable = false)
     private Place place;
 
+    protected Review() {
+
+    }
+
+    public Review(UUID id, User user, Place place) {
+        this.id = id;
+        this.content = "꼭 가야하는 곳이에요.";
+        this.user = user;
+        this.place = place;
+    }
+
     public UUID getId() {
         return id;
     }

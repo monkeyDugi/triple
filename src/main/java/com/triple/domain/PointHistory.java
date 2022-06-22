@@ -11,7 +11,7 @@ import static javax.persistence.FetchType.LAZY;
 
 public class PointHistory extends BaseTimeEntity {
     @Id
-    @Column(columnDefinition = "BINARY(16)")
+//    @Column(columnDefinition = "BINARY(16)")
     private UUID id;
 
     @Column(nullable = false)

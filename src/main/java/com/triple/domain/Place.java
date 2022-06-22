@@ -2,14 +2,13 @@ package com.triple.domain;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import java.util.Objects;
 import java.util.UUID;
 
-import static javax.persistence.FetchType.*;
+import static javax.persistence.FetchType.LAZY;
 
 @Entity
 public class Place extends BaseTimeEntity {
@@ -26,6 +25,17 @@ public class Place extends BaseTimeEntity {
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "MEMBER_ID", nullable = false)
     private User user;
+
+    protected Place() {
+
+    }
+
+    public Place(UUID id, User user) {
+        this.id = id;
+        this.name = "바람의 언덕";
+        this.content = "너무 좋아요 힐링하고 왔습니다.";
+        this.user = user;
+    }
 
     public UUID getId() {
         return id;

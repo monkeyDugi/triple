@@ -7,7 +7,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 @Entity
-public class User extends BaseTimeEntity{
+public class User extends BaseTimeEntity {
     @Id
     @Column(columnDefinition = "BINARY(16)")
     private UUID id;
