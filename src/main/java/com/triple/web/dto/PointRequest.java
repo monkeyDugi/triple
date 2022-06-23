@@ -67,4 +67,9 @@ public class PointRequest {
     public UUID getPlaceId() {
         return placeId;
     }
+
+    public int calculateContentScore() {
+//        return action.getScore(this);
+        return 0;
+    }
 }

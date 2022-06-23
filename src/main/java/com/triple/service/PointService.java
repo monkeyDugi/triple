@@ -34,39 +34,12 @@ public class PointService {
         Review review = reviewService.findById(pointRequest.getReviewId());
         Place place = placeService.findById(pointRequest.getPlaceId());
 
-        int score = calculateScore(place, pointRequest);
-        Point point = new Point(score, user);
-        PointHistory pointHistory = new PointHistory(score, pointRequest.getAction(), pointRequest.getContent(),
+        boolean isFirstReview = pointHistoryRepository.findByPlaceAndLatest(place).isPresent();
+        Point point = new Point(user, isFirstReview, pointRequest.getAction(), pointRequest.getPhotoCount());
+        PointHistory pointHistory = new PointHistory(point.getScore(), pointRequest.getAction(), pointRequest.getContent(),
                 pointRequest.getPhotoCount(), review, user, place);
         pointHistoryRepository.save(pointHistory);
 
         return pointRepository.save(point);
-    }
-
-    private int calculateScore(Place place, PointRequest pointRequest) {
-        return getContentScore(pointRequest) + getFirstReviewBonusScore(place);
-    }
-
-    private int getContentScore(PointRequest pointRequest) {
-        if (pointRequest.getAction() == ActionType.ADD) {
-            if (pointRequest.getPhotoCount() > 0) {
-                return 2;
-            }
-            return 1;
-        } else if (pointRequest.getAction() == ActionType.MOD) {
-
-        } else if (pointRequest.getAction() == ActionType.DELETE) {
-
-        }
-        return 0;
-    }
-
-    private int getFirstReviewBonusScore(Place place) {
-        boolean isFirstReview = pointHistoryRepository.findByPlaceAndLatest(place)
-                .isPresent();
-        if (!isFirstReview) {
-            return 1;
-        }
-        return 0;
     }
 }
