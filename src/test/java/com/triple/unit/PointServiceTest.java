@@ -85,7 +85,6 @@ public class PointServiceTest extends UnitTest {
         // given
         User userPlaceRegistrant = createUser(PLACE_REGISTRANT_ACCOUNT_ID);
         Place place = createPlace(userPlaceRegistrant);
-
         createFirstReview(place);
 
         User userSecondReviewer = createUser(SECOND_REVIEWER_ACCOUNT_ID);
@@ -100,6 +99,28 @@ public class PointServiceTest extends UnitTest {
 
         // then
         assertThat(point.getScore()).isEqualTo(2);
+    }
+
+    @DisplayName("첫 리뷰가 아니고 리뷰 내용만으로 포인트 적립")
+    @Test
+    void 리뷰_내용_리뷰_생성_이벤트_포인트_적립() {
+        // given
+        User userPlaceRegistrant = createUser(PLACE_REGISTRANT_ACCOUNT_ID);
+        Place place = createPlace(userPlaceRegistrant);
+        createFirstReview(place);
+
+        User userSecondReviewer = createUser(SECOND_REVIEWER_ACCOUNT_ID);
+        Review review = createReview(userSecondReviewer, place);
+
+        List<UUID> attachedPhotoIds = null;
+        PointRequest pointRequest = new PointRequest(EventType.REVIEW, ActionType.ADD, DEFAULT_CONTENT,
+                attachedPhotoIds, review.getId(), userSecondReviewer.getId(), place.getId());
+
+        // when
+        Point point = pointService.actionPoint(pointRequest);
+
+        // then
+        assertThat(point.getScore()).isEqualTo(1);
     }
 
     private void createFirstReview(Place place) {
