@@ -11,6 +11,8 @@ import com.triple.web.dto.PointRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Transactional
 @Service
 public class PointService {
@@ -30,11 +32,21 @@ public class PointService {
 
     public Point actionPoint(PointRequest pointRequest) {
         User user = userService.findById(pointRequest.getUserId());
-        Point point = new Point(3, user);
         Review review = reviewService.findById(pointRequest.getReviewId());
         Place place = placeService.findById(pointRequest.getPlaceId());
 
-        PointHistory pointHistory = new PointHistory(3, pointRequest.getAction(), pointRequest.getContent(),
+        boolean isFirstReview = pointHistoryRepository.findByPlaceAndLatest(place)
+                .isPresent();
+        List<PointHistory> all = pointHistoryRepository.findAll();
+        int score = 0;
+        if (isFirstReview) {
+            score = 2;
+        } else {
+            score = 3;
+        }
+
+        Point point = new Point(score, user);
+        PointHistory pointHistory = new PointHistory(score, pointRequest.getAction(), pointRequest.getContent(),
                 pointRequest.getPhotoCount(), review, user, place);
         pointHistoryRepository.save(pointHistory);
 
