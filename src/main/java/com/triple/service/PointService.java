@@ -1,6 +1,5 @@
 package com.triple.service;
 
-import com.triple.domain.ActionType;
 import com.triple.domain.Place;
 import com.triple.domain.Point;
 import com.triple.domain.PointHistory;
@@ -34,12 +33,19 @@ public class PointService {
         Review review = reviewService.findById(pointRequest.getReviewId());
         Place place = placeService.findById(pointRequest.getPlaceId());
 
-        boolean isFirstReview = pointHistoryRepository.findByPlaceAndLatest(place).isPresent();
-        Point point = new Point(user, isFirstReview, pointRequest.getAction(), pointRequest.getPhotoCount());
-        PointHistory pointHistory = new PointHistory(point.getScore(), pointRequest.getAction(), pointRequest.getContent(),
-                pointRequest.getPhotoCount(), review, user, place);
+        int score = calculateScore(place, pointRequest);
+        Point point = new Point(score, user);
+
+        PointHistory pointHistory = new PointHistory(score, pointRequest.getAction(),
+                pointRequest.getContent(), pointRequest.getPhotoCount(),
+                review, user, place);
         pointHistoryRepository.save(pointHistory);
 
         return pointRepository.save(point);
+    }
+
+    private int calculateScore(Place place, PointRequest pointRequest) {
+        boolean isNotFirstReview = pointHistoryRepository.findByPlaceAndLatest(place).isPresent();
+        return pointRequest.calculateContentScore() + pointRequest.calculateBonusScore(isNotFirstReview);
     }
 }

@@ -28,13 +28,12 @@ public class Point extends BaseTimeEntity {
     @JoinColumn(name = "USER_ID", nullable = false)
     private User user;
 
-    public Point(int score, User user) {
-        this.score = score;
-        this.user = user;
+    protected Point() {
+
     }
 
-    public Point(User user, boolean isFirstReview, ActionType action, int photoCount) {
-        this.score = action.getScore(photoCount) + (isFirstReview ? 0 : 1);
+    public Point(int score, User user) {
+        this.score = score;
         this.user = user;
     }
 

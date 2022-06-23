@@ -69,7 +69,10 @@ public class PointRequest {
     }
 
     public int calculateContentScore() {
-//        return action.getScore(this);
-        return 0;
+        return action.getScore(attachedPhotoIds.size());
+    }
+
+    public int calculateBonusScore(boolean isFirstReview) {
+        return action.getBonusScore(isFirstReview);
     }
 }
