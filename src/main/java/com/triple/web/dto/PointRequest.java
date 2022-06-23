@@ -3,6 +3,7 @@ package com.triple.web.dto;
 import com.triple.domain.ActionType;
 import com.triple.domain.EventType;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -10,8 +11,8 @@ import java.util.UUID;
 public class PointRequest {
     private EventType type;
     private ActionType action;
-    private String content;
-    private List<UUID> attachedPhotoIds;
+    private String content = "꼭 가야하는 곳이에요.";
+    private List<UUID> attachedPhotoIds = new ArrayList<>();
     private UUID reviewId;
     private UUID userId;
     private UUID placeId;
@@ -24,8 +25,12 @@ public class PointRequest {
                         List<UUID> attachedPhotoIds, UUID reviewId, UUID userId, UUID placeId) {
         this.type = type;
         this.action = action;
-        this.content = content;
-        this.attachedPhotoIds = attachedPhotoIds;
+        if (content != null) {
+            this.content = content;
+        }
+        if (attachedPhotoIds != null) {
+            this.attachedPhotoIds = attachedPhotoIds;
+        }
         this.reviewId = reviewId;
         this.userId = userId;
         this.placeId = placeId;

@@ -1,5 +1,6 @@
 package com.triple.service;
 
+import com.triple.domain.ActionType;
 import com.triple.domain.Place;
 import com.triple.domain.Point;
 import com.triple.domain.PointHistory;
@@ -10,8 +11,6 @@ import com.triple.repository.PointRepository;
 import com.triple.web.dto.PointRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Transactional
 @Service
@@ -35,21 +34,39 @@ public class PointService {
         Review review = reviewService.findById(pointRequest.getReviewId());
         Place place = placeService.findById(pointRequest.getPlaceId());
 
-        boolean isFirstReview = pointHistoryRepository.findByPlaceAndLatest(place)
-                .isPresent();
-        List<PointHistory> all = pointHistoryRepository.findAll();
-        int score = 0;
-        if (isFirstReview) {
-            score = 2;
-        } else {
-            score = 3;
-        }
-
+        int score = calculateScore(place, pointRequest);
         Point point = new Point(score, user);
         PointHistory pointHistory = new PointHistory(score, pointRequest.getAction(), pointRequest.getContent(),
                 pointRequest.getPhotoCount(), review, user, place);
         pointHistoryRepository.save(pointHistory);
 
         return pointRepository.save(point);
+    }
+
+    private int calculateScore(Place place, PointRequest pointRequest) {
+        return getContentScore(pointRequest) + getFirstReviewBonusScore(place);
+    }
+
+    private int getContentScore(PointRequest pointRequest) {
+        if (pointRequest.getAction() == ActionType.ADD) {
+            if (pointRequest.getPhotoCount() > 0) {
+                return 2;
+            }
+            return 1;
+        } else if (pointRequest.getAction() == ActionType.MOD) {
+
+        } else if (pointRequest.getAction() == ActionType.DELETE) {
+
+        }
+        return 0;
+    }
+
+    private int getFirstReviewBonusScore(Place place) {
+        boolean isFirstReview = pointHistoryRepository.findByPlaceAndLatest(place)
+                .isPresent();
+        if (!isFirstReview) {
+            return 1;
+        }
+        return 0;
     }
 }
