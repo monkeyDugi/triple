@@ -43,10 +43,23 @@ public class Place extends BaseTimeEntity {
 
     }
 
-    public Place(User user, String address, String name) {
+    public static Place emptyPlace(UUID id, User user) {
+        return new Place(id, user);
+    }
+
+    public Place(String address, String name, User user) {
         this.address = address;
         this.name = name;
         this.content = "너무 좋아요 힐링하고 왔습니다.";
+        this.deleted = false;
+        this.user = user;
+    }
+
+    private Place(UUID id, User user) {
+        this.id = id;
+        this.address = "삭제된 장소";
+        this.name = "삭제된 장소";
+        this.content = "삭제된 장소";
         this.deleted = false;
         this.user = user;
     }

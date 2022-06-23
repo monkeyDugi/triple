@@ -17,7 +17,17 @@ public enum ActionType {
         }
         return 1;
     }),
-    MOD("리뷰 수정", null, null),
+    MOD("리뷰 수정", photoCount -> {
+        if (photoCount > 0) {
+            return 2;
+        }
+        return 1;
+    }, isNotFirstReview -> {
+        if (isNotFirstReview) {
+            return 0;
+        }
+        return 1;
+    }),
     DELETE("리뷰 삭제", null, null);
 
     private final String description;

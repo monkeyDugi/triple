@@ -134,8 +134,9 @@ public class PointServiceTest extends UnitTest {
         assertThat(point.getScore()).isEqualTo(1);
     }
 
+    @DisplayName("다른 장소에 같은 사용자가 리뷰 생성 시 포인트 누적")
     @Test
-    void 누적_포인트_적립() {
+    void 누적_포인트_적립_다른_장소에_추가_리뷰() {
         // given
         User userPlaceRegistrant = createUser(PLACE_REGISTRANT_ACCOUNT_ID);
         Place place1 = createPlace(userPlaceRegistrant, DEFAULT_ADDRESS, DEFAULT_PLACE_NAME);
@@ -179,7 +180,7 @@ public class PointServiceTest extends UnitTest {
     }
 
     private Place createPlace(User user, String address, String name) {
-        return placeRepository.save(new Place(user, address, name));
+        return placeRepository.save(new Place(address, name, user));
     }
 
     private Review createReview(User user, Place place) {

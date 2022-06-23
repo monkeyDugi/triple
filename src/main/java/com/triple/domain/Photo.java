@@ -24,12 +24,22 @@ public class Photo extends BaseTimeEntity {
     @Column(nullable = false)
     private String originFileName;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = false)
     private String storeFileName;
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "REVIEW_ID", nullable = false)
     private Review review;
+
+    protected Photo() {
+
+    }
+
+    public Photo(String originFileName, String storeFileName, Review review) {
+        this.originFileName = originFileName;
+        this.storeFileName = storeFileName;
+        this.review = review;
+    }
 
     public UUID getId() {
         return id;

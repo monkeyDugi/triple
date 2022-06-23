@@ -30,8 +30,8 @@ public class PointService {
 
     public void actionPoint(PointRequest pointRequest) {
         User user = userService.findById(pointRequest.getUserId());
+        Place place = placeService.findById(pointRequest.getPlaceId(), user);
         Review review = reviewService.findById(pointRequest.getReviewId());
-        Place place = placeService.findById(pointRequest.getPlaceId());
 
         int score = calculateScore(place, pointRequest);
         Point point = pointRepository.findByUser(user)

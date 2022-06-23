@@ -1,9 +1,11 @@
 package com.triple.acceptance;
 
 import com.triple.domain.ActionType;
+import com.triple.domain.Photo;
 import com.triple.domain.Place;
 import com.triple.domain.Review;
 import com.triple.domain.User;
+import com.triple.repository.PhotoRepository;
 import com.triple.repository.PlaceRepository;
 import com.triple.repository.ReviewRepository;
 import com.triple.repository.UserRepository;
@@ -13,10 +15,15 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static com.triple.acceptance.PointStepsAssert.포인트_적립됨;
 import static com.triple.acceptance.PointStepsRequest.포인트_적립_요청;
@@ -37,6 +44,9 @@ public class PointAcceptanceTest extends AcceptanceTest {
     @Autowired
     private PlaceRepository placeRepository;
 
+    @Autowired
+    private PhotoRepository photoRepository;
+
     /**
      * Given 리뷰 내용과 사진 첨부 리뷰 작성됨
      * When 포인트 적립 요청
@@ -49,9 +59,32 @@ public class PointAcceptanceTest extends AcceptanceTest {
 
         User userReviewer = 회원_생성됨(FIRST_REVIEWER_ACCOUNT_ID);
         Review review = 리뷰_생성됨(userReviewer, place);
+        List<UUID> attachedPhotoIds = 리뷰_이미지_생성됨(review);
 
-        List<UUID> attachedPhotoIds = Arrays.asList(UUID.randomUUID(), UUID.randomUUID());
         ExtractableResponse<Response> response = 포인트_적립_요청(given(), ActionType.ADD, attachedPhotoIds, review.getId(), userReviewer.getId(), place.getId());
+
+        포인트_적립됨(response);
+    }
+
+    /**
+     * Given 리뷰 내용과 사진 첨부 리뷰 작성됨
+     * And 포인트 적립됨
+     * And 리뷰 수정됨(이미지 삭제)
+     * When 포인트 적립 요청
+     * Then 포인트 적립됨
+     */
+    @Test
+    void 리뷰_수정_이벤트_포인트_적립() {
+        User userPlaceRegistrant = 회원_생성됨(PLACE_REGISTRANT_ACCOUNT_ID);
+        Place place = 장소_생성(userPlaceRegistrant);
+        User userReviewer = 회원_생성됨(FIRST_REVIEWER_ACCOUNT_ID);
+        Review review = 리뷰_생성됨(userReviewer, place);
+        List<UUID> attachedPhotoIds = 리뷰_이미지_생성됨(review);
+        포인트_적립_요청(given(), ActionType.ADD, attachedPhotoIds, review.getId(), userReviewer.getId(), place.getId());
+        List<UUID> deleteAttachedPhotoIds = 리뷰_이미지_삭제됨(review);
+
+        ExtractableResponse<Response> response =
+                포인트_적립_요청(given(), ActionType.MOD, deleteAttachedPhotoIds, review.getId(), userReviewer.getId(), place.getId());
 
         포인트_적립됨(response);
     }
@@ -61,10 +94,28 @@ public class PointAcceptanceTest extends AcceptanceTest {
     }
 
     private Place 장소_생성(User user) {
-        return placeRepository.save(new Place(user, DEFAULT_ADDRESS, DEFAULT_PLACE_NAME));
+        return placeRepository.save(new Place(DEFAULT_ADDRESS, DEFAULT_PLACE_NAME, user));
     }
 
     private Review 리뷰_생성됨(User user, Place place) {
         return reviewRepository.save(new Review(user, place));
+    }
+
+    private List<UUID> 리뷰_이미지_생성됨(Review review) {
+        List<Photo> photos = photoRepository.saveAll(Arrays.asList(
+                new Photo("originFileName", "storeFileName1", review),
+                new Photo("originFileName", "storeFileName2", review)
+                )
+        );
+        return photos.stream()
+                .map(Photo::getId)
+                .collect(Collectors.toList());
+    }
+
+    private List<UUID> 리뷰_이미지_삭제됨(Review review) {
+        photoRepository.deleteByReview(review);
+        return photoRepository.findAllByReview(review).stream()
+                .map(Photo::getId)
+                .collect(Collectors.toList());
     }
 }

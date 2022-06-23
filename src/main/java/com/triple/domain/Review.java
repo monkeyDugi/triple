@@ -48,14 +48,6 @@ public class Review extends BaseTimeEntity {
         this.place = place;
     }
 
-    public Review(UUID id, User user, Place place) {
-        this.id = id;
-        this.content = "꼭 가야하는 곳이에요.";
-        this.deleted = false;
-        this.user = user;
-        this.place = place;
-    }
-
     public UUID getId() {
         return id;
     }

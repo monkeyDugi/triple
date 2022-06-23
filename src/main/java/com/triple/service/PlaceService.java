@@ -1,6 +1,7 @@
 package com.triple.service;
 
 import com.triple.domain.Place;
+import com.triple.domain.User;
 import com.triple.repository.PlaceRepository;
 import org.springframework.stereotype.Service;
 
@@ -14,8 +15,8 @@ public class PlaceService {
         this.placeRepository = placeRepository;
     }
 
-    public Place findById(UUID id) {
+    public Place findById(UUID id, User user) {
         return placeRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("존재하지 않는 장소입니다."));
+                .orElse(Place.emptyPlace(id, user));
     }
 }
