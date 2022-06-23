@@ -1,6 +1,12 @@
 package com.triple.domain;
 
+import org.hibernate.annotations.GenericGenerator;
+
 import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -9,16 +15,20 @@ import java.util.UUID;
 
 import static javax.persistence.FetchType.LAZY;
 
+@Entity
 public class PointHistory extends BaseTimeEntity {
     @Id
-//    @Column(columnDefinition = "BINARY(16)")
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    @Column(columnDefinition = "BINARY(16)")
     private UUID id;
 
     @Column(nullable = false)
-    private String score;
+    private int score;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String action;
+    private ActionType action;
 
     @Column(nullable = false)
     private String content;
@@ -38,15 +48,29 @@ public class PointHistory extends BaseTimeEntity {
     @JoinColumn(name = "PLACE_ID", nullable = false)
     private Place place;
 
+    protected PointHistory() {
+
+    }
+
+    public PointHistory(int score, ActionType action, String content, int photoCount, Review review, User user, Place place) {
+        this.score = score;
+        this.action = action;
+        this.content = content;
+        this.photoCount = photoCount;
+        this.review = review;
+        this.user = user;
+        this.place = place;
+    }
+
     public UUID getId() {
         return id;
     }
 
-    public String getScore() {
+    public int getScore() {
         return score;
     }
 
-    public String getAction() {
+    public ActionType getAction() {
         return action;
     }
 
@@ -75,11 +99,10 @@ public class PointHistory extends BaseTimeEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         PointHistory that = (PointHistory) o;
-        return getPhotoCount() == that.getPhotoCount() &&
-                Objects.equals(getId(), that.getId()) && Objects.equals(getScore(), that.getScore()) &&
-                Objects.equals(getAction(), that.getAction()) && Objects.equals(getContent(), that.getContent()) &&
-                Objects.equals(getReview(), that.getReview()) && Objects.equals(getUser(), that.getUser()) &&
-                Objects.equals(getPlace(), that.getPlace());
+        return getScore() == that.getScore() && getPhotoCount() == that.getPhotoCount() &&
+                Objects.equals(getId(), that.getId()) && getAction() == that.getAction() &&
+                Objects.equals(getContent(), that.getContent()) && Objects.equals(getReview(), that.getReview()) &&
+                Objects.equals(getUser(), that.getUser()) && Objects.equals(getPlace(), that.getPlace());
     }
 
     @Override
@@ -91,8 +114,8 @@ public class PointHistory extends BaseTimeEntity {
     public String toString() {
         return "PointHistory{" +
                 "id=" + id +
-                ", score='" + score + '\'' +
-                ", action='" + action + '\'' +
+                ", score=" + score +
+                ", action=" + action +
                 ", content='" + content + '\'' +
                 ", photoCount=" + photoCount +
                 ", review=" + review +

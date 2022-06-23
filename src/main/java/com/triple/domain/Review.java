@@ -1,7 +1,11 @@
 package com.triple.domain;
 
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Where;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
@@ -11,14 +15,19 @@ import java.util.UUID;
 
 import static javax.persistence.FetchType.LAZY;
 
+@Where(clause = "deleted = false")
 @Entity
 public class Review extends BaseTimeEntity {
     @Id
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @Column(columnDefinition = "BINARY(16)")
     private UUID id;
 
     @Lob
     private String content;
+
+    private boolean deleted;
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "MEMBER_ID", nullable = false)
@@ -32,9 +41,17 @@ public class Review extends BaseTimeEntity {
 
     }
 
+    public Review(User user, Place place) {
+        this.content = "꼭 가야하는 곳이에요.";
+        this.deleted = false;
+        this.user = user;
+        this.place = place;
+    }
+
     public Review(UUID id, User user, Place place) {
         this.id = id;
         this.content = "꼭 가야하는 곳이에요.";
+        this.deleted = false;
         this.user = user;
         this.place = place;
     }
@@ -45,6 +62,10 @@ public class Review extends BaseTimeEntity {
 
     public String getContent() {
         return content;
+    }
+
+    public boolean isDeleted() {
+        return deleted;
     }
 
     public User getUser() {
@@ -60,15 +81,14 @@ public class Review extends BaseTimeEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Review review = (Review) o;
-        return Objects.equals(id, review.id) &&
-                Objects.equals(content, review.content) &&
-                Objects.equals(user, review.user) &&
-                Objects.equals(place, review.place);
+        return isDeleted() == review.isDeleted() && Objects.equals(getId(), review.getId()) &&
+                Objects.equals(getContent(), review.getContent()) && Objects.equals(getUser(), review.getUser()) &&
+                Objects.equals(getPlace(), review.getPlace());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, content, user, place);
+        return Objects.hash(getId(), getContent(), isDeleted(), getUser(), getPlace());
     }
 
     @Override
@@ -76,6 +96,7 @@ public class Review extends BaseTimeEntity {
         return "Review{" +
                 "id=" + id +
                 ", content='" + content + '\'' +
+                ", deleted=" + deleted +
                 ", user=" + user +
                 ", place=" + place +
                 '}';

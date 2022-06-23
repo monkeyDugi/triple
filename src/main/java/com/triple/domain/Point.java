@@ -1,7 +1,10 @@
 package com.triple.domain;
 
+import org.hibernate.annotations.GenericGenerator;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -13,21 +16,32 @@ import static javax.persistence.FetchType.LAZY;
 @Entity
 public class Point extends BaseTimeEntity {
     @Id
-//    @Column(columnDefinition = "BINARY(16)")
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    @Column(columnDefinition = "BINARY(16)")
     private UUID id;
 
     @Column(nullable = false)
-    private String score;
+    private int score;
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "USER_ID", nullable = false)
     private User user;
 
+    protected Point() {
+
+    }
+
+    public Point(int score, User user) {
+        this.score = score;
+        this.user = user;
+    }
+
     public UUID getId() {
         return id;
     }
 
-    public String getScore() {
+    public int getScore() {
         return score;
     }
 
@@ -40,7 +54,9 @@ public class Point extends BaseTimeEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Point point = (Point) o;
-        return Objects.equals(getId(), point.getId()) && Objects.equals(getScore(), point.getScore()) && Objects.equals(getUser(), point.getUser());
+        return getScore() == point.getScore() &&
+                Objects.equals(getId(), point.getId()) &&
+                Objects.equals(getUser(), point.getUser());
     }
 
     @Override
@@ -52,7 +68,7 @@ public class Point extends BaseTimeEntity {
     public String toString() {
         return "Point{" +
                 "id=" + id +
-                ", score='" + score + '\'' +
+                ", score=" + score +
                 ", user=" + user +
                 '}';
     }
