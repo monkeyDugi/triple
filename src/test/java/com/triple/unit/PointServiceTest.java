@@ -7,6 +7,7 @@ import com.triple.domain.Point;
 import com.triple.domain.Review;
 import com.triple.domain.User;
 import com.triple.repository.PlaceRepository;
+import com.triple.repository.PointRepository;
 import com.triple.repository.ReviewRepository;
 import com.triple.repository.UserRepository;
 import com.triple.service.PointService;
@@ -20,13 +21,19 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
+import static com.triple.util.CommonUtils.DEFAULT_ADDRESS;
 import static com.triple.util.CommonUtils.DEFAULT_CONTENT;
+import static com.triple.util.CommonUtils.DEFAULT_PLACE_NAME;
 import static com.triple.util.CommonUtils.FIRST_REVIEWER_ACCOUNT_ID;
 import static com.triple.util.CommonUtils.PLACE_REGISTRANT_ACCOUNT_ID;
+import static com.triple.util.CommonUtils.SECOND_ADDRESS;
 import static com.triple.util.CommonUtils.SECOND_REVIEWER_ACCOUNT_ID;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class PointServiceTest extends UnitTest {
+    @Autowired
+    private PointRepository pointRepository;
+
     @Autowired
     private PointService pointService;
 
@@ -43,17 +50,18 @@ public class PointServiceTest extends UnitTest {
     void 첫_리뷰_내용과_사진_첨부_리뷰_생성_이벤트_포인트_적립() {
         // given
         User userPlaceRegistrant = createUser(PLACE_REGISTRANT_ACCOUNT_ID);
-        Place place = createPlace(userPlaceRegistrant);
+        Place place = createPlace(userPlaceRegistrant, DEFAULT_ADDRESS, DEFAULT_PLACE_NAME);
 
         User userReviewer = createUser(FIRST_REVIEWER_ACCOUNT_ID);
         Review review = createReview(userReviewer, place);
 
-        List<UUID> attachedPhotoIds = Arrays.asList(UUID.randomUUID(), UUID.randomUUID());
-        PointRequest pointRequest = new PointRequest(EventType.REVIEW, ActionType.ADD, DEFAULT_CONTENT,
-                attachedPhotoIds, review.getId(), userReviewer.getId(), place.getId());
+        PointRequest pointRequest = createPointRequest(
+                ActionType.ADD, createAttachedPhotoIds(), review.getId(), userReviewer.getId(), place.getId()
+        );
 
         // when
-        Point point = pointService.actionPoint(pointRequest);
+        pointService.actionPoint(pointRequest);
+        Point point = pointRepository.findByUser(userReviewer).get();
 
         // then
         assertThat(point.getScore()).isEqualTo(3);
@@ -63,17 +71,18 @@ public class PointServiceTest extends UnitTest {
     void 첫_리뷰_내용_리뷰_생성_이벤트_포인트_적립() {
         // given
         User userPlaceRegistrant = createUser(PLACE_REGISTRANT_ACCOUNT_ID);
-        Place place = createPlace(userPlaceRegistrant);
+        Place place = createPlace(userPlaceRegistrant, DEFAULT_ADDRESS, DEFAULT_PLACE_NAME);
 
         User userReviewer = createUser(FIRST_REVIEWER_ACCOUNT_ID);
         Review review = createReview(userReviewer, place);
 
-        List<UUID> attachedPhotoIds = null;
-        PointRequest pointRequest = new PointRequest(EventType.REVIEW, ActionType.ADD, DEFAULT_CONTENT,
-                attachedPhotoIds, review.getId(), userReviewer.getId(), place.getId());
+        PointRequest pointRequest = createPointRequest(
+                ActionType.ADD, null, review.getId(), userReviewer.getId(), place.getId()
+        );
 
         // when
-        Point point = pointService.actionPoint(pointRequest);
+        pointService.actionPoint(pointRequest);
+        Point point = pointRepository.findByUser(userReviewer).get();
 
         // then
         assertThat(point.getScore()).isEqualTo(2);
@@ -84,18 +93,19 @@ public class PointServiceTest extends UnitTest {
     void 리뷰_내용과_사진_첨부_리뷰_생성_이벤트_포인트_적립() {
         // given
         User userPlaceRegistrant = createUser(PLACE_REGISTRANT_ACCOUNT_ID);
-        Place place = createPlace(userPlaceRegistrant);
+        Place place = createPlace(userPlaceRegistrant, DEFAULT_ADDRESS, DEFAULT_PLACE_NAME);
         createFirstReview(place);
 
         User userSecondReviewer = createUser(SECOND_REVIEWER_ACCOUNT_ID);
         Review review = createReview(userSecondReviewer, place);
 
-        List<UUID> attachedPhotoIds = Arrays.asList(UUID.randomUUID(), UUID.randomUUID());
-        PointRequest pointRequest = new PointRequest(EventType.REVIEW, ActionType.ADD, DEFAULT_CONTENT,
-                attachedPhotoIds, review.getId(), userSecondReviewer.getId(), place.getId());
+        PointRequest pointRequest = createPointRequest(
+                ActionType.ADD, createAttachedPhotoIds(), review.getId(), userSecondReviewer.getId(), place.getId()
+        );
 
         // when
-        Point point = pointService.actionPoint(pointRequest);
+        pointService.actionPoint(pointRequest);
+        Point point = pointRepository.findByUser(userSecondReviewer).get();
 
         // then
         assertThat(point.getScore()).isEqualTo(2);
@@ -106,30 +116,60 @@ public class PointServiceTest extends UnitTest {
     void 리뷰_내용_리뷰_생성_이벤트_포인트_적립() {
         // given
         User userPlaceRegistrant = createUser(PLACE_REGISTRANT_ACCOUNT_ID);
-        Place place = createPlace(userPlaceRegistrant);
+        Place place = createPlace(userPlaceRegistrant, DEFAULT_ADDRESS, DEFAULT_PLACE_NAME);
         createFirstReview(place);
 
         User userSecondReviewer = createUser(SECOND_REVIEWER_ACCOUNT_ID);
         Review review = createReview(userSecondReviewer, place);
 
-        List<UUID> attachedPhotoIds = null;
-        PointRequest pointRequest = new PointRequest(EventType.REVIEW, ActionType.ADD, DEFAULT_CONTENT,
-                attachedPhotoIds, review.getId(), userSecondReviewer.getId(), place.getId());
+        PointRequest pointRequest = createPointRequest(
+                ActionType.ADD, null, review.getId(), userSecondReviewer.getId(), place.getId()
+        );
 
         // when
-        Point point = pointService.actionPoint(pointRequest);
+        pointService.actionPoint(pointRequest);
+        Point point = pointRepository.findByUser(userSecondReviewer).get();
 
         // then
         assertThat(point.getScore()).isEqualTo(1);
+    }
+
+    @Test
+    void 누적_포인트_적립() {
+        // given
+        User userPlaceRegistrant = createUser(PLACE_REGISTRANT_ACCOUNT_ID);
+        Place place1 = createPlace(userPlaceRegistrant, DEFAULT_ADDRESS, DEFAULT_PLACE_NAME);
+        Place place2 = createPlace(userPlaceRegistrant, SECOND_ADDRESS, DEFAULT_PLACE_NAME);
+
+        User userReviewer = createUser(FIRST_REVIEWER_ACCOUNT_ID);
+
+        Review reviewPlace1 = createReview(userReviewer, place1);
+        PointRequest pointRequestPlace1 = createPointRequest(
+                ActionType.ADD, createAttachedPhotoIds(), reviewPlace1.getId(), userReviewer.getId(), place1.getId()
+        );
+
+        pointService.actionPoint(pointRequestPlace1);
+
+        Review reviewPlace2 = createReview(userReviewer, place2);
+        PointRequest pointRequestPlace2 = createPointRequest(
+                ActionType.ADD, createAttachedPhotoIds(), reviewPlace2.getId(), userReviewer.getId(), place2.getId()
+        );
+
+        // when
+        pointService.actionPoint(pointRequestPlace2);
+        Point point = pointRepository.findByUser(userReviewer).get();
+
+        // then
+        assertThat(point.getScore()).isEqualTo(6);
     }
 
     private void createFirstReview(Place place) {
         User userFirstReviewer = createUser(FIRST_REVIEWER_ACCOUNT_ID);
         Review review = createReview(userFirstReviewer, place);
 
-        List<UUID> attachedPhotoIds = Arrays.asList(UUID.randomUUID(), UUID.randomUUID());
-        PointRequest pointRequest = new PointRequest(EventType.REVIEW, ActionType.ADD, DEFAULT_CONTENT,
-                attachedPhotoIds, review.getId(), userFirstReviewer.getId(), place.getId());
+        PointRequest pointRequest = createPointRequest(
+                ActionType.ADD, createAttachedPhotoIds(), review.getId(), userFirstReviewer.getId(), place.getId()
+        );
 
         pointService.actionPoint(pointRequest);
     }
@@ -138,11 +178,20 @@ public class PointServiceTest extends UnitTest {
         return userRepository.save(new User(accountId));
     }
 
-    private Place createPlace(User user) {
-        return placeRepository.save(new Place(user));
+    private Place createPlace(User user, String address, String name) {
+        return placeRepository.save(new Place(user, address, name));
     }
 
     private Review createReview(User user, Place place) {
         return reviewRepository.save(new Review(user, place));
+    }
+
+    private List<UUID> createAttachedPhotoIds() {
+        return Arrays.asList(UUID.randomUUID(), UUID.randomUUID());
+    }
+
+    private PointRequest createPointRequest(ActionType actionType, List<UUID> attachedPhotoIds, UUID reviewId, UUID userId, UUID placeId) {
+        return new PointRequest(EventType.REVIEW, actionType, DEFAULT_CONTENT,
+                attachedPhotoIds, reviewId, userId, placeId);
     }
 }

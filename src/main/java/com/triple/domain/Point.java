@@ -32,9 +32,12 @@ public class Point extends BaseTimeEntity {
 
     }
 
-    public Point(int score, User user) {
-        this.score = score;
+    public Point(User user) {
         this.user = user;
+    }
+
+    public void updateScore(int score) {
+        this.score += score;
     }
 
     public UUID getId() {

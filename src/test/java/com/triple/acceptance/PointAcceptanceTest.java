@@ -20,6 +20,8 @@ import java.util.UUID;
 
 import static com.triple.acceptance.PointStepsAssert.포인트_적립됨;
 import static com.triple.acceptance.PointStepsRequest.포인트_적립_요청;
+import static com.triple.util.CommonUtils.DEFAULT_ADDRESS;
+import static com.triple.util.CommonUtils.DEFAULT_PLACE_NAME;
 import static com.triple.util.CommonUtils.FIRST_REVIEWER_ACCOUNT_ID;
 import static com.triple.util.CommonUtils.PLACE_REGISTRANT_ACCOUNT_ID;
 import static io.restassured.RestAssured.given;
@@ -59,7 +61,7 @@ public class PointAcceptanceTest extends AcceptanceTest {
     }
 
     private Place 장소_생성(User user) {
-        return placeRepository.save(new Place(user));
+        return placeRepository.save(new Place(user, DEFAULT_ADDRESS, DEFAULT_PLACE_NAME));
     }
 
     private Review 리뷰_생성됨(User user, Place place) {

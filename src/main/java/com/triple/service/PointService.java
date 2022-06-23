@@ -28,20 +28,26 @@ public class PointService {
         this.placeService = placeService;
     }
 
-    public Point actionPoint(PointRequest pointRequest) {
+    public void actionPoint(PointRequest pointRequest) {
         User user = userService.findById(pointRequest.getUserId());
         Review review = reviewService.findById(pointRequest.getReviewId());
         Place place = placeService.findById(pointRequest.getPlaceId());
 
         int score = calculateScore(place, pointRequest);
-        Point point = new Point(score, user);
+        Point point = pointRepository.findByUser(user)
+                .orElse(new Point(user));
 
+        point.updateScore(score);
+        pointRepository.save(point);
+
+        savePointHistory(pointRequest, user, review, place, score);
+    }
+
+    private void savePointHistory(PointRequest pointRequest, User user, Review review, Place place, int score) {
         PointHistory pointHistory = new PointHistory(score, pointRequest.getAction(),
                 pointRequest.getContent(), pointRequest.getPhotoCount(),
                 review, user, place);
         pointHistoryRepository.save(pointHistory);
-
-        return pointRepository.save(point);
     }
 
     private int calculateScore(Place place, PointRequest pointRequest) {

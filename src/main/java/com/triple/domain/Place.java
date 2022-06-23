@@ -23,6 +23,9 @@ public class Place extends BaseTimeEntity {
     @Column(columnDefinition = "BINARY(16)")
     private UUID id;
 
+    @Column(nullable = false, unique = true)
+    private String address;
+
     @Column(nullable = false)
     private String name;
 
@@ -40,16 +43,9 @@ public class Place extends BaseTimeEntity {
 
     }
 
-    public Place(User user) {
-        this.name = "바람의 언덕";
-        this.content = "너무 좋아요 힐링하고 왔습니다.";
-        this.deleted = false;
-        this.user = user;
-    }
-
-    public Place(UUID id, User user) {
-        this.id = id;
-        this.name = "바람의 언덕";
+    public Place(User user, String address, String name) {
+        this.address = address;
+        this.name = name;
         this.content = "너무 좋아요 힐링하고 왔습니다.";
         this.deleted = false;
         this.user = user;
@@ -57,6 +53,10 @@ public class Place extends BaseTimeEntity {
 
     public UUID getId() {
         return id;
+    }
+
+    public String getAddress() {
+        return address;
     }
 
     public String getName() {
@@ -81,19 +81,20 @@ public class Place extends BaseTimeEntity {
         if (o == null || getClass() != o.getClass()) return false;
         Place place = (Place) o;
         return isDeleted() == place.isDeleted() && Objects.equals(getId(), place.getId()) &&
-                Objects.equals(getName(), place.getName()) && Objects.equals(getContent(), place.getContent()) &&
-                Objects.equals(getUser(), place.getUser());
+                Objects.equals(getAddress(), place.getAddress()) && Objects.equals(getName(), place.getName()) &&
+                Objects.equals(getContent(), place.getContent()) && Objects.equals(getUser(), place.getUser());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getName(), getContent(), isDeleted(), getUser());
+        return Objects.hash(getId(), getAddress(), getName(), getContent(), isDeleted(), getUser());
     }
 
     @Override
     public String toString() {
         return "Place{" +
                 "id=" + id +
+                ", address='" + address + '\'' +
                 ", name='" + name + '\'' +
                 ", content='" + content + '\'' +
                 ", deleted=" + deleted +
