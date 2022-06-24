@@ -15,22 +15,21 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static com.triple.acceptance.PointStepsAssert.포인트_적립됨;
 import static com.triple.acceptance.PointStepsRequest.포인트_적립_요청;
 import static com.triple.util.CommonUtils.DEFAULT_ADDRESS;
+import static com.triple.util.CommonUtils.DEFAULT_ORIGIN_FILE_NAME;
 import static com.triple.util.CommonUtils.DEFAULT_PLACE_NAME;
 import static com.triple.util.CommonUtils.FIRST_REVIEWER_ACCOUNT_ID;
+import static com.triple.util.CommonUtils.FIRST_STORE_FILE_NAME;
 import static com.triple.util.CommonUtils.PLACE_REGISTRANT_ACCOUNT_ID;
+import static com.triple.util.CommonUtils.SECOND_STORE_FILE_NAME;
 import static io.restassured.RestAssured.given;
 
 @DisplayName("포인트 관리")
@@ -103,8 +102,8 @@ public class PointAcceptanceTest extends AcceptanceTest {
 
     private List<UUID> 리뷰_이미지_생성됨(Review review) {
         List<Photo> photos = photoRepository.saveAll(Arrays.asList(
-                new Photo("originFileName", "storeFileName1", review),
-                new Photo("originFileName", "storeFileName2", review)
+                new Photo(DEFAULT_ORIGIN_FILE_NAME, FIRST_STORE_FILE_NAME, review),
+                new Photo(DEFAULT_ORIGIN_FILE_NAME, SECOND_STORE_FILE_NAME, review)
                 )
         );
         return photos.stream()

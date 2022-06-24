@@ -52,6 +52,10 @@ public class PointHistory extends BaseTimeEntity {
 
     }
 
+    public static PointHistory emptyPointHistory() {
+        return new PointHistory(0, null, null, 0, null, null, null);
+    }
+
     public PointHistory(int score, ActionType action, String content, int photoCount, Review review, User user, Place place) {
         this.score = score;
         this.action = action;
