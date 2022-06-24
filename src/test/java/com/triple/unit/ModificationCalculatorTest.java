@@ -14,10 +14,11 @@ public class ModificationCalculatorTest {
 
         int currentPhotoCount = 1;
         int prePhotoCount = 0;
-        boolean unusedParameter = false;
+        boolean isNotFirstReview = false;
+        int currentScore = 0;
 
         // when
-        int score = calculator.calculate(currentPhotoCount, prePhotoCount, unusedParameter);
+        int score = calculator.calculate(currentPhotoCount, prePhotoCount, isNotFirstReview, currentScore);
 
         // when
         assertThat(score).isEqualTo(1);
@@ -30,10 +31,11 @@ public class ModificationCalculatorTest {
 
         int currentPhotoCount = 0;
         int prePhotoCount = 1;
-        boolean unusedParameter = false;
+        boolean isNotFirstReview = false;
+        int currentScore = 0;
 
         // when
-        int score = calculator.calculate(currentPhotoCount, prePhotoCount, unusedParameter);
+        int score = calculator.calculate(currentPhotoCount, prePhotoCount, isNotFirstReview, currentScore);
 
         // when
         assertThat(score).isEqualTo(-1);
@@ -46,10 +48,11 @@ public class ModificationCalculatorTest {
 
         int currentPhotoCount = 1;
         int prePhotoCount = 2;
-        boolean unusedParameter = false;
+        boolean isNotFirstReview = false;
+        int currentScore = 0;
 
         // when
-        int score = calculator.calculate(currentPhotoCount, prePhotoCount, unusedParameter);
+        int score = calculator.calculate(currentPhotoCount, prePhotoCount, isNotFirstReview, currentScore);
 
         // when
         assertThat(score).isEqualTo(0);

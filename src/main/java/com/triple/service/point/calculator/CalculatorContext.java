@@ -16,14 +16,18 @@ public class CalculatorContext {
         this.pointHistoryRepository = pointHistoryRepository;
     }
 
-    public int calculate(PointRequest pointRequest, Review review, Place place) {
+    public int calculate(PointRequest pointRequest, Review review, Place place, int score) {
         if (pointRequest.getAction() == ActionType.ADD) {
             return new AdditionCalculator()
-                    .calculate(pointRequest.getPhotoCount(), 0, isNotFirstReview(place));
+                    .calculate(pointRequest.getPhotoCount(), 0, isNotFirstReview(place), score);
         }
         if (pointRequest.getAction() == ActionType.MOD) {
             return new ModificationCalculator()
-                    .calculate(pointRequest.getPhotoCount(), findPrePhotoCount(review), true);
+                    .calculate(pointRequest.getPhotoCount(), findPrePhotoCount(review), true, score);
+        }
+        if (pointRequest.getAction() == ActionType.DELETE) {
+            return new DeletedCalculator()
+                    .calculate(0, 0, true, score);
         }
         return 0;
     }

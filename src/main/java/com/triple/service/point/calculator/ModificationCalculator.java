@@ -5,7 +5,7 @@ package com.triple.service.point.calculator;
  */
 public class ModificationCalculator implements ActionCalculator {
     @Override
-    public int calculate(int currentPhotoCount, int prePhotoCount, boolean unusedParameter) {
+    public int calculate(int currentPhotoCount, int prePhotoCount, boolean isNotFirstReview, int score) {
         if (isDeletedAllPhoto(currentPhotoCount, prePhotoCount)) {
             return -1;
         } else if (isCreatedPhoto(currentPhotoCount, prePhotoCount)) {

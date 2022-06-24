@@ -13,11 +13,12 @@ public class AdditionCalculatorTest {
         ActionCalculator calculator = new AdditionCalculator();
 
         int currentPhotoCount = 1;
-        int unusedParameter = 0;
+        int prePhotoCount = 0;
         boolean isNotFirstReview = false;
+        int currentScore = 0;
 
         // when
-        int score = calculator.calculate(currentPhotoCount, unusedParameter, isNotFirstReview);
+        int score = calculator.calculate(currentPhotoCount, prePhotoCount, isNotFirstReview, currentScore);
 
         // when
         assertThat(score).isEqualTo(3);
@@ -29,11 +30,12 @@ public class AdditionCalculatorTest {
         ActionCalculator calculator = new AdditionCalculator();
 
         int currentPhotoCount = 0;
-        int unusedParameter = 0;
+        int prePhotoCount = 0;
         boolean isNotFirstReview = false;
+        int currentScore = 0;
 
         // when
-        int score = calculator.calculate(currentPhotoCount, unusedParameter, isNotFirstReview);
+        int score = calculator.calculate(currentPhotoCount, prePhotoCount, isNotFirstReview, currentScore);
 
         // when
         assertThat(score).isEqualTo(2);
@@ -45,11 +47,12 @@ public class AdditionCalculatorTest {
         ActionCalculator calculator = new AdditionCalculator();
 
         int currentPhotoCount = 1;
-        int unusedParameter = 0;
+        int prePhotoCount = 0;
         boolean isNotFirstReview = true;
+        int currentScore = 0;
 
         // when
-        int score = calculator.calculate(currentPhotoCount, unusedParameter, isNotFirstReview);
+        int score = calculator.calculate(currentPhotoCount, prePhotoCount, isNotFirstReview, currentScore);
 
         // when
         assertThat(score).isEqualTo(2);
@@ -61,11 +64,12 @@ public class AdditionCalculatorTest {
         ActionCalculator calculator = new AdditionCalculator();
 
         int currentPhotoCount = 0;
-        int unusedParameter = 0;
+        int prePhotoCount = 0;
         boolean isNotFirstReview = true;
+        int currentScore = 0;
 
         // when
-        int score = calculator.calculate(currentPhotoCount, unusedParameter, isNotFirstReview);
+        int score = calculator.calculate(currentPhotoCount, prePhotoCount, isNotFirstReview, currentScore);
 
         // when
         assertThat(score).isEqualTo(1);
