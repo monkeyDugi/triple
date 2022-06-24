@@ -35,7 +35,7 @@ public class PointService {
     public void actionPoint(PointRequest pointRequest) {
         User user = userService.findById(pointRequest.getUserId());
         Place place = placeService.findById(pointRequest.getPlaceId(), user);
-        Review review = reviewService.findById(pointRequest.getReviewId());
+        Review review = reviewService.findById(pointRequest.getReviewId(), user, place);
 
         Point point = pointRepository.findByUser(user)
                 .orElse(new Point(user));

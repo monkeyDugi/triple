@@ -15,6 +15,7 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -66,14 +67,14 @@ public class PointAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * Given 리뷰 내용과 사진 첨부 리뷰 작성됨
+     * Given 첫 리뷰 내용과 사진 첨부 리뷰 작성됨
      * And 포인트 적립됨
      * And 리뷰 수정됨(이미지 삭제)
      * When 포인트 적립 요청
      * Then 포인트 적립됨
      */
     @Test
-    void 리뷰_수정_이벤트_포인트_적립() {
+    void 첫_리뷰_수정_이벤트_포인트_적립() {
         User userPlaceRegistrant = 회원_생성됨(PLACE_REGISTRANT_ACCOUNT_ID);
         Place place = 장소_생성(userPlaceRegistrant);
         User userReviewer = 회원_생성됨(FIRST_REVIEWER_ACCOUNT_ID);
@@ -88,6 +89,29 @@ public class PointAcceptanceTest extends AcceptanceTest {
         포인트_적립됨(response);
     }
 
+    /**
+     * Given 첫 리뷰 내용과 사진 첨부 리뷰 작성됨
+     * And 포인트 적립됨
+     * And 리뷰 삭제
+     * When 포인트 적립 요청
+     * Then 포인트 차감됨
+     */
+    @Test
+    void 첫_리뷰_삭제_이벤트_포인트_적립() {
+        User userPlaceRegistrant = 회원_생성됨(PLACE_REGISTRANT_ACCOUNT_ID);
+        Place place = 장소_생성(userPlaceRegistrant);
+        User userReviewer = 회원_생성됨(FIRST_REVIEWER_ACCOUNT_ID);
+        Review review = 리뷰_생성됨(userReviewer, place);
+        List<UUID> attachedPhotoIds = 리뷰_이미지_생성됨(review);
+        포인트_적립_요청(given(), ActionType.ADD, attachedPhotoIds, review.getId(), userReviewer.getId(), place.getId());
+        리뷰_삭제됨(review);
+
+        ExtractableResponse<Response> response =
+                포인트_적립_요청(given(), ActionType.DELETE, attachedPhotoIds, review.getId(), userReviewer.getId(), place.getId());
+
+        포인트_적립됨(response);
+    }
+
     private User 회원_생성됨(String accountId) {
         return userRepository.save(new User(accountId));
     }
@@ -98,6 +122,11 @@ public class PointAcceptanceTest extends AcceptanceTest {
 
     private Review 리뷰_생성됨(User user, Place place) {
         return reviewRepository.save(new Review(user, place));
+    }
+
+    private void 리뷰_삭제됨(Review review) {
+        ReflectionTestUtils.setField(review, "deleted", true);
+        reviewRepository.save(review);
     }
 
     private List<UUID> 리뷰_이미지_생성됨(Review review) {
