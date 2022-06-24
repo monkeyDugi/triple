@@ -18,6 +18,7 @@ import com.triple.web.dto.PointRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -281,6 +282,139 @@ public class PointServiceTest extends UnitTest {
         assertThat(point.getScore()).isEqualTo(2);
     }
 
+    @DisplayName("첫 리뷰로 두 장소에 등록 후 한 장소 리뷰 삭제")
+    @Test
+    void 누적_포인트_차감_두_장소_첫_리뷰_삭제() {
+        // given
+        User userPlaceRegistrant = createUser(PLACE_REGISTRANT_ACCOUNT_ID);
+        Place place1 = createPlace(userPlaceRegistrant, DEFAULT_ADDRESS, DEFAULT_PLACE_NAME);
+        Place place2 = createPlace(userPlaceRegistrant, SECOND_ADDRESS, DEFAULT_PLACE_NAME);
+
+        User user = createUser(FIRST_REVIEWER_ACCOUNT_ID);
+        Review review1 = createReview(user, place1);
+        Review review2 = createReview(user, place2);
+
+        List<UUID> review1AttachedPhotoIds = createAttachedPhotoIds(review1);
+        pointService.actionPoint(
+                createPointRequest(
+                        ActionType.ADD, review1AttachedPhotoIds,
+                        review1.getId(), user.getId(), place1.getId())
+        );
+        pointService.actionPoint(
+                createPointRequest(
+                        ActionType.ADD, createAttachedPhotoIds(review2),
+                        review2.getId(), user.getId(), place2.getId())
+        );
+        deleteReview(review1);
+
+        // when
+        pointService.actionPoint(
+                createPointRequest(
+                        ActionType.DELETE, review1AttachedPhotoIds,
+                        review1.getId(), user.getId(), place1.getId())
+        );
+        Point point = pointRepository.findByUser(user).get();
+
+        // then
+        assertThat(point.getScore()).isEqualTo(3);
+    }
+
+    @Test
+    void 누적_포인트_차감_첫_리뷰_삭제() {
+        // given
+        User userPlaceRegistrant = createUser(PLACE_REGISTRANT_ACCOUNT_ID);
+        Place place = createPlace(userPlaceRegistrant, DEFAULT_ADDRESS, DEFAULT_PLACE_NAME);
+        User user = createUser(FIRST_REVIEWER_ACCOUNT_ID);
+        Review review = createReview(user, place);
+
+        List<UUID> review1AttachedPhotoIds = createAttachedPhotoIds(review);
+        pointService.actionPoint(
+                createPointRequest(
+                        ActionType.ADD, review1AttachedPhotoIds,
+                        review.getId(), user.getId(), place.getId())
+        );
+        deleteReview(review);
+
+        // when
+        pointService.actionPoint(
+                createPointRequest(
+                        ActionType.DELETE, review1AttachedPhotoIds,
+                        review.getId(), user.getId(), place.getId())
+        );
+        Point point = pointRepository.findByUser(user).get();
+
+        // then
+        assertThat(point.getScore()).isEqualTo(0);
+    }
+
+    @Test
+    void 누적_포인트_차감_리뷰_삭제() {
+        // given
+        User userPlaceRegistrant = createUser(PLACE_REGISTRANT_ACCOUNT_ID);
+        Place place = createPlace(userPlaceRegistrant, DEFAULT_ADDRESS, DEFAULT_PLACE_NAME);
+        createFirstReview(place);
+
+        User user = createUser(SECOND_REVIEWER_ACCOUNT_ID);
+        Review review = createReview(user, place);
+
+        List<UUID> review1AttachedPhotoIds = createAttachedPhotoIds(review);
+        pointService.actionPoint(
+                createPointRequest(
+                        ActionType.ADD, review1AttachedPhotoIds,
+                        review.getId(), user.getId(), place.getId())
+        );
+        deleteReview(review);
+
+        // when
+        pointService.actionPoint(
+                createPointRequest(
+                        ActionType.DELETE, review1AttachedPhotoIds,
+                        review.getId(), user.getId(), place.getId())
+        );
+        Point point = pointRepository.findByUser(user).get();
+
+        // then
+        assertThat(point.getScore()).isEqualTo(0);
+    }
+
+    @DisplayName("첫 리뷰가 아닌 장소와 첫 리뷰인 장소 중 첫 리뷰가 아닌 리뷰 삭제")
+    @Test
+    void 누적_포인트_차감_두_장소_리뷰_삭제() {
+        // given
+        User userPlaceRegistrant = createUser(PLACE_REGISTRANT_ACCOUNT_ID);
+        Place place1 = createPlace(userPlaceRegistrant, DEFAULT_ADDRESS, DEFAULT_PLACE_NAME);
+        Place place2 = createPlace(userPlaceRegistrant, SECOND_ADDRESS, DEFAULT_PLACE_NAME);
+        createFirstReview(place1);
+
+        User user = createUser(SECOND_REVIEWER_ACCOUNT_ID);
+        Review review1 = createReview(user, place1);
+        Review review2 = createReview(user, place2);
+
+        List<UUID> review1AttachedPhotoIds = createAttachedPhotoIds(review1);
+        pointService.actionPoint(
+                createPointRequest(
+                        ActionType.ADD, review1AttachedPhotoIds,
+                        review1.getId(), user.getId(), place1.getId())
+        );
+        pointService.actionPoint(
+                createPointRequest(
+                        ActionType.ADD, createAttachedPhotoIds(review2),
+                        review2.getId(), user.getId(), place2.getId())
+        );
+        deleteReview(review1);
+
+        // when
+        pointService.actionPoint(
+                createPointRequest(
+                        ActionType.DELETE, review1AttachedPhotoIds,
+                        review1.getId(), user.getId(), place1.getId())
+        );
+        Point point = pointRepository.findByUser(user).get();
+
+        // then
+        assertThat(point.getScore()).isEqualTo(3);
+    }
+
     private void createFirstReview(Place place) {
         User userFirstReviewer = createUser(FIRST_REVIEWER_ACCOUNT_ID);
         Review review = createReview(userFirstReviewer, place);
@@ -302,6 +436,11 @@ public class PointServiceTest extends UnitTest {
 
     private Review createReview(User user, Place place) {
         return reviewRepository.save(new Review(user, place));
+    }
+
+    private void deleteReview(Review review) {
+        ReflectionTestUtils.setField(review, "deleted", true);
+        reviewRepository.save(review);
     }
 
     private PointRequest createPointRequest(ActionType actionType, List<UUID> attachedPhotoIds, UUID reviewId, UUID userId, UUID placeId) {

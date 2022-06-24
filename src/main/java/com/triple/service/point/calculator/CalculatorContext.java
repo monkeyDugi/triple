@@ -16,26 +16,27 @@ public class CalculatorContext {
         this.pointHistoryRepository = pointHistoryRepository;
     }
 
-    public int calculate(PointRequest pointRequest, Review review, Place place, int score) {
+    public int calculate(PointRequest pointRequest, Review review, Place place) {
+        PointHistory prePointHistory = findPrePointHistory(review);
+
         if (pointRequest.getAction() == ActionType.ADD) {
             return new AdditionCalculator()
-                    .calculate(pointRequest.getPhotoCount(), 0, isNotFirstReview(place), score);
+                    .calculate(pointRequest.getPhotoCount(), 0, isNotFirstReview(place), 0);
         }
         if (pointRequest.getAction() == ActionType.MOD) {
             return new ModificationCalculator()
-                    .calculate(pointRequest.getPhotoCount(), findPrePhotoCount(review), true, score);
+                    .calculate(pointRequest.getPhotoCount(), prePointHistory.getPhotoCount(), true, 0);
         }
         if (pointRequest.getAction() == ActionType.DELETE) {
             return new DeletedCalculator()
-                    .calculate(0, 0, true, score);
+                    .calculate(0, 0, true, prePointHistory.getScore());
         }
         return 0;
     }
 
-    private int findPrePhotoCount(Review review) {
+    private PointHistory findPrePointHistory(Review review) {
         return pointHistoryRepository.findByReviewAndLatest(review)
-                .orElse(PointHistory.emptyPointHistory())
-                .getPhotoCount();
+                .orElse(PointHistory.emptyPointHistory());
     }
 
     private boolean isNotFirstReview(Place place) {
