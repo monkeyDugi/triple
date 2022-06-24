@@ -1,0 +1,96 @@
+package com.triple.domain;
+
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Where;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
+import java.util.Objects;
+import java.util.UUID;
+
+import static javax.persistence.FetchType.LAZY;
+
+@Where(clause = "deleted = false")
+@Entity
+public class Review extends BaseTimeEntity {
+    @Id
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    @Column(columnDefinition = "BINARY(16)")
+    private UUID id;
+
+    @Lob
+    private String content;
+
+    private boolean deleted;
+
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "MEMBER_ID", nullable = false)
+    private User user;
+
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "PLACE_ID", nullable = false)
+    private Place place;
+
+    protected Review() {
+
+    }
+
+    public Review(User user, Place place) {
+        this.content = "꼭 가야하는 곳이에요.";
+        this.deleted = false;
+        this.user = user;
+        this.place = place;
+    }
+
+    public UUID getId() {
+        return id;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public Place getPlace() {
+        return place;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Review review = (Review) o;
+        return isDeleted() == review.isDeleted() && Objects.equals(getId(), review.getId()) &&
+                Objects.equals(getContent(), review.getContent()) && Objects.equals(getUser(), review.getUser()) &&
+                Objects.equals(getPlace(), review.getPlace());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getContent(), isDeleted(), getUser(), getPlace());
+    }
+
+    @Override
+    public String toString() {
+        return "Review{" +
+                "id=" + id +
+                ", content='" + content + '\'' +
+                ", deleted=" + deleted +
+                ", user=" + user +
+                ", place=" + place +
+                '}';
+    }
+}
