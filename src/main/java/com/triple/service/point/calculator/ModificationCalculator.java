@@ -1,8 +1,11 @@
-package com.triple.service;
+package com.triple.service.point.calculator;
 
-public class ModCalculator implements ActionCalculator {
+/**
+ * 리뷰 수정 시 적립될 포인트를 반환한다.
+ */
+public class ModificationCalculator implements ActionCalculator {
     @Override
-    public int calculate(int currentPhotoCount, int prePhotoCount, boolean isNotFirstReview) {
+    public int calculate(int currentPhotoCount, int prePhotoCount, boolean unusedParameter) {
         if (isDeletedAllPhoto(currentPhotoCount, prePhotoCount)) {
             return -1;
         } else if (isCreatedPhoto(currentPhotoCount, prePhotoCount)) {

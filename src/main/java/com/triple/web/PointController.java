@@ -1,6 +1,6 @@
 package com.triple.web;
 
-import com.triple.service.PointService;
+import com.triple.service.point.PointService;
 import com.triple.web.dto.PointRequest;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;

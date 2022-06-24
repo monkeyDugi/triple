@@ -12,7 +12,7 @@ import com.triple.repository.PlaceRepository;
 import com.triple.repository.PointRepository;
 import com.triple.repository.ReviewRepository;
 import com.triple.repository.UserRepository;
-import com.triple.service.PointService;
+import com.triple.service.point.PointService;
 import com.triple.util.UnitTest;
 import com.triple.web.dto.PointRequest;
 import org.junit.jupiter.api.DisplayName;

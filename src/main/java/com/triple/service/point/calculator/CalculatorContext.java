@@ -1,4 +1,4 @@
-package com.triple.service;
+package com.triple.service.point.calculator;
 
 import com.triple.domain.ActionType;
 import com.triple.domain.Place;
@@ -18,11 +18,11 @@ public class CalculatorContext {
 
     public int calculate(PointRequest pointRequest, Review review, Place place) {
         if (pointRequest.getAction() == ActionType.ADD) {
-            return new AddCalculator()
+            return new AdditionCalculator()
                     .calculate(pointRequest.getPhotoCount(), 0, isNotFirstReview(place));
         }
         if (pointRequest.getAction() == ActionType.MOD) {
-            return new ModCalculator()
+            return new ModificationCalculator()
                     .calculate(pointRequest.getPhotoCount(), findPrePhotoCount(review), true);
         }
         return 0;

@@ -1,4 +1,4 @@
-package com.triple.service;
+package com.triple.service.point;
 
 import com.triple.domain.Place;
 import com.triple.domain.Point;
@@ -7,6 +7,10 @@ import com.triple.domain.Review;
 import com.triple.domain.User;
 import com.triple.repository.PointHistoryRepository;
 import com.triple.repository.PointRepository;
+import com.triple.service.PlaceService;
+import com.triple.service.ReviewService;
+import com.triple.service.UserService;
+import com.triple.service.point.calculator.CalculatorContext;
 import com.triple.web.dto.PointRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
