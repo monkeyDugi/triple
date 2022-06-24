@@ -227,6 +227,60 @@ public class PointServiceTest extends UnitTest {
         assertThat(point.getScore()).isEqualTo(1);
     }
 
+    @Test
+    void 누적_포인트_차감_첫_리뷰_수정_이미지_추가() {
+        // given
+        User userPlaceRegistrant = createUser(PLACE_REGISTRANT_ACCOUNT_ID);
+        Place place = createPlace(userPlaceRegistrant, DEFAULT_ADDRESS, DEFAULT_PLACE_NAME);
+        User user = createUser(FIRST_REVIEWER_ACCOUNT_ID);
+        Review review = createReview(user, place);
+
+        pointService.actionPoint(
+                createPointRequest(
+                        ActionType.ADD, deleteAttachedPhotoIds(review),
+                        review.getId(), user.getId(), place.getId())
+        );
+
+        // when
+        pointService.actionPoint(
+                createPointRequest(
+                        ActionType.MOD, createAttachedPhotoIds(review),
+                        review.getId(), user.getId(), place.getId())
+        );
+        Point point = pointRepository.findByUser(user).get();
+
+        // then
+        assertThat(point.getScore()).isEqualTo(3);
+    }
+
+    @Test
+    void 누적_포인트_차감_리뷰_수정_이미지_추가() {
+        // given
+        User userPlaceRegistrant = createUser(PLACE_REGISTRANT_ACCOUNT_ID);
+        Place place = createPlace(userPlaceRegistrant, DEFAULT_ADDRESS, DEFAULT_PLACE_NAME);
+        createFirstReview(place);
+
+        User user = createUser(SECOND_REVIEWER_ACCOUNT_ID);
+        Review review = createReview(user, place);
+
+        pointService.actionPoint(
+                createPointRequest(
+                        ActionType.ADD, deleteAttachedPhotoIds(review),
+                        review.getId(), user.getId(), place.getId())
+        );
+
+        // when
+        pointService.actionPoint(
+                createPointRequest(
+                        ActionType.MOD, createAttachedPhotoIds(review),
+                        review.getId(), user.getId(), place.getId())
+        );
+        Point point = pointRepository.findByUser(user).get();
+
+        // then
+        assertThat(point.getScore()).isEqualTo(2);
+    }
+
     private void createFirstReview(Place place) {
         User userFirstReviewer = createUser(FIRST_REVIEWER_ACCOUNT_ID);
         Review review = createReview(userFirstReviewer, place);
