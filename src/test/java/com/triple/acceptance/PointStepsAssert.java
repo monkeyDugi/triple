@@ -11,7 +11,7 @@ public class PointStepsAssert {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
-    public static void 포인트_적립_안됨(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    public static void 포인트_조회됨(ExtractableResponse<Response> response, int score) {
+        assertThat(response.jsonPath().getInt("score")).isEqualTo(score);
     }
 }

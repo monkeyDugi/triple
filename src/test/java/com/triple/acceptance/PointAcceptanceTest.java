@@ -24,7 +24,9 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static com.triple.acceptance.PointStepsAssert.포인트_적립됨;
+import static com.triple.acceptance.PointStepsAssert.포인트_조회됨;
 import static com.triple.acceptance.PointStepsRequest.포인트_적립_요청;
+import static com.triple.acceptance.PointStepsRequest.포인트_조회_요청;
 import static com.triple.util.CommonUtils.ADDRESS1;
 import static com.triple.util.CommonUtils.ORIGIN_FILE_NAME;
 import static com.triple.util.CommonUtils.PLACE_NAME;
@@ -110,6 +112,41 @@ public class PointAcceptanceTest extends AcceptanceTest {
                 포인트_적립_요청(given(), ActionType.DELETE, attachedPhotoIds, review.getId(), userReviewer.getId(), place.getId());
 
         포인트_적립됨(response);
+    }
+
+    /**
+     * Given 리뷰 내용과 사진 첨부 리뷰 작성됨
+     * And 포인트 적립 요청
+     * When 포인트 조회 요청
+     * Then 포인트 조회됨
+     */
+    @Test
+    void 첫_리뷰_내용과_사진_첨부_리뷰_생성_이벤트_포인트_조회() {
+        User userPlaceRegistrant = 회원_생성됨(PLACE_REGISTRANT_ACCOUNT_ID);
+        Place place = 장소_생성(userPlaceRegistrant);
+        User userReviewer = 회원_생성됨(REVIEWER_ACCOUNT_ID1);
+        Review review = 리뷰_생성됨(userReviewer, place);
+        List<UUID> attachedPhotoIds = 리뷰_이미지_생성됨(review);
+        포인트_적립_요청(given(), ActionType.ADD, attachedPhotoIds, review.getId(), userReviewer.getId(), place.getId());
+
+        ExtractableResponse<Response> response = 포인트_조회_요청(given(), userReviewer.getId());
+
+        포인트_조회됨(response, 3);
+    }
+
+    /**
+     * Given 포인트 적립 내역없음
+     * When 포인트 조회 요청
+     * Then 포인트 조회됨
+     */
+    @Test
+    void 포인트_없는_경우_포인트_조회() {
+        User userPlaceRegistrant = 회원_생성됨(PLACE_REGISTRANT_ACCOUNT_ID);
+        User userReviewer = 회원_생성됨(REVIEWER_ACCOUNT_ID1);
+
+        ExtractableResponse<Response> response = 포인트_조회_요청(given(), userReviewer.getId());
+
+        포인트_조회됨(response, 0);
     }
 
     private User 회원_생성됨(String accountId) {

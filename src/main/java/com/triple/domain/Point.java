@@ -32,7 +32,17 @@ public class Point extends BaseTimeEntity {
 
     }
 
+    public static Point emptyPoint(UUID userId) {
+        return new Point(null, User.emptyUser(userId));
+    }
+
     public Point(User user) {
+        this.user = user;
+    }
+
+    private Point(UUID id, User user) {
+        this.id = id;
+        this.score = 0;
         this.user = user;
     }
 

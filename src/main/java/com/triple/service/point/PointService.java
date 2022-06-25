@@ -11,9 +11,13 @@ import com.triple.service.PlaceService;
 import com.triple.service.ReviewService;
 import com.triple.service.UserService;
 import com.triple.service.point.calculator.CalculatorContext;
-import com.triple.web.dto.PointRequest;
+import com.triple.web.dto.PointResponse;
+import com.triple.web.dto.PointSaveRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
+import java.util.UUID;
 
 @Transactional
 @Service
@@ -34,29 +38,35 @@ public class PointService {
         this.calculatorContext = calculatorContext;
     }
 
-    public void actionPoint(PointRequest pointRequest) {
-        User user = userService.findById(pointRequest.getUserId());
-        Place place = placeService.findById(pointRequest.getPlaceId(), user);
-        Review review = reviewService.findById(pointRequest.getReviewId(), user, place);
+    public void actionPoint(PointSaveRequest pointSaveRequest) {
+        User user = userService.findById(pointSaveRequest.getUserId());
+        Place place = placeService.findById(pointSaveRequest.getPlaceId(), user);
+        Review review = reviewService.findById(pointSaveRequest.getReviewId(), user, place);
 
-        int score = calculateScore(pointRequest, review, place);
+        int score = calculateScore(pointSaveRequest, review, place);
         Point point = pointRepository.findByUserId(user.getId())
                 .orElse(new Point(user));
 
         point.updateScore(score);
         pointRepository.save(point);
 
-        savePointHistory(pointRequest, user, review, place, score);
+        savePointHistory(pointSaveRequest, user, review, place, score);
     }
 
-    private int calculateScore(PointRequest pointRequest, Review review, Place place) {
-        return calculatorContext.calculate(pointRequest, review.getId(), place.getId());
+    private int calculateScore(PointSaveRequest pointSaveRequest, Review review, Place place) {
+        return calculatorContext.calculate(pointSaveRequest, review.getId(), place.getId());
     }
 
-    private void savePointHistory(PointRequest pointRequest, User user, Review review, Place place, int score) {
-        PointHistory pointHistory = new PointHistory(score, pointRequest.getAction(),
-                pointRequest.getContent(), pointRequest.getPhotoCount(),
+    private void savePointHistory(PointSaveRequest pointSaveRequest, User user, Review review, Place place, int score) {
+        PointHistory pointHistory = new PointHistory(score, pointSaveRequest.getAction(),
+                pointSaveRequest.getContent(), pointSaveRequest.getPhotoCount(),
                 review, user, place);
         pointHistoryRepository.save(pointHistory);
+    }
+
+    public PointResponse findPoint(UUID userId) {
+        Point point = pointRepository.findByUserId(userId)
+                .orElse(Point.emptyPoint(userId));
+        return new PointResponse(point.getId(), point.getScore(), point.getUser().getId());
     }
 }
