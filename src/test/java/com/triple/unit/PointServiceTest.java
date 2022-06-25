@@ -14,6 +14,7 @@ import com.triple.repository.ReviewRepository;
 import com.triple.repository.UserRepository;
 import com.triple.service.point.PointService;
 import com.triple.util.UnitTest;
+import com.triple.web.dto.PointResponse;
 import com.triple.web.dto.PointSaveRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -493,6 +494,39 @@ public class PointServiceTest extends UnitTest {
         // then
         assertThat(firstReviewPoint.getScore()).isEqualTo(0);
         assertThat(secondReviewPoint.getScore()).isEqualTo(2);
+    }
+
+    @Test
+    void 첫_리뷰_내용과_사진_첨부_리뷰_생성_이벤트_포인트_조회() {
+        // given
+        User userPlaceRegistrant = createUser(PLACE_REGISTRANT_ACCOUNT_ID);
+        Place place = createPlace(userPlaceRegistrant, ADDRESS1, PLACE_NAME);
+
+        User userReviewer = createUser(REVIEWER_ACCOUNT_ID1);
+        Review review = createReview(userReviewer, place);
+
+        PointSaveRequest pointSaveRequest = createPointRequest(
+                ActionType.ADD, createAttachedPhotoIds(review), review.getId(), userReviewer.getId(), place.getId()
+        );
+        pointService.actionPoint(pointSaveRequest);
+
+        // when
+        PointResponse pointResponse = pointService.findPoint(userReviewer.getId());
+
+        // then
+        assertThat(pointResponse.getScore()).isEqualTo(3);
+    }
+
+    @Test
+    void 포인트_없는_경우_포인트_조회() {
+        // given
+        User userReviewer = createUser(REVIEWER_ACCOUNT_ID1);
+
+        // when
+        PointResponse pointResponse = pointService.findPoint(userReviewer.getId());
+
+        // then
+        assertThat(pointResponse.getScore()).isEqualTo(0);
     }
 
     private void createFirstReview(Place place) {
