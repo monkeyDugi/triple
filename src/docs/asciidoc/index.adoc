@@ -1,0 +1,19 @@
+:doctype: book
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+[[resources]]
+= Resources
+
+[[resources-post]]
+== 리뷰 포인트
+
+=== 포인트 적립
+
+operation::point-action[snippets='http-request,request-fields,http-response']
+
+=== 포인트 조회
+
+operation::point-find[snippets='http-request,request-fields,http-response,response-fields']
