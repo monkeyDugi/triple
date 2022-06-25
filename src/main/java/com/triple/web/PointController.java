@@ -25,7 +25,7 @@ public class PointController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping(value = "/points/user", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/point", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<PointResponse> findPoint(@RequestBody PointFindRequest pointFindRequest) {
         PointResponse pointResponse = pointService.findPoint(pointFindRequest.getUserId());
         return ResponseEntity.ok(pointResponse);

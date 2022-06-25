@@ -44,7 +44,7 @@ public class PointStepsRequest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .body(params)
-                .when().get("/points/user")
+                .when().get("/point")
                 .then().log().all()
                 .extract();
     }
