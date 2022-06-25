@@ -14,7 +14,7 @@ import com.triple.repository.ReviewRepository;
 import com.triple.repository.UserRepository;
 import com.triple.service.point.PointService;
 import com.triple.util.UnitTest;
-import com.triple.web.dto.PointRequest;
+import com.triple.web.dto.PointSaveRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,12 +66,12 @@ public class PointServiceTest extends UnitTest {
         User userReviewer = createUser(REVIEWER_ACCOUNT_ID1);
         Review review = createReview(userReviewer, place);
 
-        PointRequest pointRequest = createPointRequest(
+        PointSaveRequest pointSaveRequest = createPointRequest(
                 ActionType.ADD, createAttachedPhotoIds(review), review.getId(), userReviewer.getId(), place.getId()
         );
 
         // when
-        pointService.actionPoint(pointRequest);
+        pointService.actionPoint(pointSaveRequest);
         Point point = pointRepository.findByUserId(userReviewer.getId()).get();
 
         // then
@@ -87,12 +87,12 @@ public class PointServiceTest extends UnitTest {
         User userReviewer = createUser(REVIEWER_ACCOUNT_ID1);
         Review review = createReview(userReviewer, place);
 
-        PointRequest pointRequest = createPointRequest(
+        PointSaveRequest pointSaveRequest = createPointRequest(
                 ActionType.ADD, null, review.getId(), userReviewer.getId(), place.getId()
         );
 
         // when
-        pointService.actionPoint(pointRequest);
+        pointService.actionPoint(pointSaveRequest);
         Point point = pointRepository.findByUserId(userReviewer.getId()).get();
 
         // then
@@ -110,12 +110,12 @@ public class PointServiceTest extends UnitTest {
         User userSecondReviewer = createUser(REVIEWER_ACCOUNT_ID2);
         Review review = createReview(userSecondReviewer, place);
 
-        PointRequest pointRequest = createPointRequest(
+        PointSaveRequest pointSaveRequest = createPointRequest(
                 ActionType.ADD, createAttachedPhotoIds(review), review.getId(), userSecondReviewer.getId(), place.getId()
         );
 
         // when
-        pointService.actionPoint(pointRequest);
+        pointService.actionPoint(pointSaveRequest);
         Point point = pointRepository.findByUserId(userSecondReviewer.getId()).get();
 
         // then
@@ -133,12 +133,12 @@ public class PointServiceTest extends UnitTest {
         User userSecondReviewer = createUser(REVIEWER_ACCOUNT_ID2);
         Review review = createReview(userSecondReviewer, place);
 
-        PointRequest pointRequest = createPointRequest(
+        PointSaveRequest pointSaveRequest = createPointRequest(
                 ActionType.ADD, null, review.getId(), userSecondReviewer.getId(), place.getId()
         );
 
         // when
-        pointService.actionPoint(pointRequest);
+        pointService.actionPoint(pointSaveRequest);
         Point point = pointRepository.findByUserId(userSecondReviewer.getId()).get();
 
         // then
@@ -156,19 +156,19 @@ public class PointServiceTest extends UnitTest {
         User userReviewer = createUser(REVIEWER_ACCOUNT_ID1);
 
         Review reviewPlace1 = createReview(userReviewer, place1);
-        PointRequest pointRequestPlace1 = createPointRequest(
+        PointSaveRequest pointSaveRequestPlace1 = createPointRequest(
                 ActionType.ADD, createAttachedPhotoIds(reviewPlace1), reviewPlace1.getId(), userReviewer.getId(), place1.getId()
         );
 
-        pointService.actionPoint(pointRequestPlace1);
+        pointService.actionPoint(pointSaveRequestPlace1);
 
         Review reviewPlace2 = createReview(userReviewer, place2);
-        PointRequest pointRequestPlace2 = createPointRequest(
+        PointSaveRequest pointSaveRequestPlace2 = createPointRequest(
                 ActionType.ADD, createAttachedPhotoIds(reviewPlace2), reviewPlace2.getId(), userReviewer.getId(), place2.getId()
         );
 
         // when
-        pointService.actionPoint(pointRequestPlace2);
+        pointService.actionPoint(pointSaveRequestPlace2);
         Point point = pointRepository.findByUserId(userReviewer.getId()).get();
 
         // then
@@ -499,11 +499,11 @@ public class PointServiceTest extends UnitTest {
         User userFirstReviewer = createUser(REVIEWER_ACCOUNT_ID1);
         Review review = createReview(userFirstReviewer, place);
 
-        PointRequest pointRequest = createPointRequest(
+        PointSaveRequest pointSaveRequest = createPointRequest(
                 ActionType.ADD, createAttachedPhotoIds(review), review.getId(), userFirstReviewer.getId(), place.getId()
         );
 
-        pointService.actionPoint(pointRequest);
+        pointService.actionPoint(pointSaveRequest);
     }
 
     private User createUser(String accountId) {
@@ -523,8 +523,8 @@ public class PointServiceTest extends UnitTest {
         reviewRepository.save(review);
     }
 
-    private PointRequest createPointRequest(ActionType actionType, List<UUID> attachedPhotoIds, UUID reviewId, UUID userId, UUID placeId) {
-        return new PointRequest(EventType.REVIEW, actionType, CONTENT,
+    private PointSaveRequest createPointRequest(ActionType actionType, List<UUID> attachedPhotoIds, UUID reviewId, UUID userId, UUID placeId) {
+        return new PointSaveRequest(EventType.REVIEW, actionType, CONTENT,
                 attachedPhotoIds, reviewId, userId, placeId);
     }
 

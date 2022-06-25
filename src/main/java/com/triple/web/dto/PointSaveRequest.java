@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-public class PointRequest {
+public class PointSaveRequest {
     private EventType type;
     private ActionType action;
     private String content = "꼭 가야하는 곳이에요.";
@@ -17,12 +17,12 @@ public class PointRequest {
     private UUID userId;
     private UUID placeId;
 
-    PointRequest() {
+    PointSaveRequest() {
 
     }
 
-    public PointRequest(EventType type, ActionType action, String content,
-                        List<UUID> attachedPhotoIds, UUID reviewId, UUID userId, UUID placeId) {
+    public PointSaveRequest(EventType type, ActionType action, String content,
+                            List<UUID> attachedPhotoIds, UUID reviewId, UUID userId, UUID placeId) {
         this.type = type;
         this.action = action;
         if (content != null) {

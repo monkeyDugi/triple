@@ -34,4 +34,18 @@ public class PointStepsRequest {
                 .then().log().all()
                 .extract();
     }
+
+    public static ExtractableResponse<Response> 포인트_조회_요청(RequestSpecification given, UUID userId) {
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("userId", userId);
+
+        return given.log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .body(params)
+                .when().get("/points/user")
+                .then().log().all()
+                .extract();
+    }
 }

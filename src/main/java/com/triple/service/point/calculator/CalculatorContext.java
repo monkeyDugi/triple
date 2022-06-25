@@ -2,7 +2,7 @@ package com.triple.service.point.calculator;
 
 import com.triple.domain.ActionType;
 import com.triple.repository.PointHistoryRepository;
-import com.triple.web.dto.PointRequest;
+import com.triple.web.dto.PointSaveRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -18,16 +18,16 @@ public class CalculatorContext {
         this.pointHistoryRepository = pointHistoryRepository;
     }
 
-    public int calculate(PointRequest pointRequest, UUID reviewId, UUID placeId) {
-        if (pointRequest.getAction() == ActionType.ADD) {
+    public int calculate(PointSaveRequest pointSaveRequest, UUID reviewId, UUID placeId) {
+        if (pointSaveRequest.getAction() == ActionType.ADD) {
             return new AdditionCalculator(pointHistoryRepository)
-                    .calculate(pointRequest.getPhotoCount(), null, placeId);
+                    .calculate(pointSaveRequest.getPhotoCount(), null, placeId);
         }
-        if (pointRequest.getAction() == ActionType.MOD) {
+        if (pointSaveRequest.getAction() == ActionType.MOD) {
             return new ModificationCalculator(pointHistoryRepository)
-                    .calculate(pointRequest.getPhotoCount(), reviewId, null);
+                    .calculate(pointSaveRequest.getPhotoCount(), reviewId, null);
         }
-        if (pointRequest.getAction() == ActionType.DELETE) {
+        if (pointSaveRequest.getAction() == ActionType.DELETE) {
             return new DeletedCalculator(pointHistoryRepository)
                     .calculate(0, reviewId, null);
         }

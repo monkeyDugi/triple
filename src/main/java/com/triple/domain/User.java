@@ -39,7 +39,7 @@ public class User extends BaseTimeEntity {
     public User(UUID id, boolean deleted) {
         this.id = id;
         this.deleted = false;
-        this.accountId = "탈퇴한 사용자";
+        this.accountId = "탈퇴했거나 존재하지 않는 사용자입니다.";
     }
 
     public UUID getId() {
