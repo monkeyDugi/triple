@@ -30,7 +30,7 @@ public class Review extends BaseTimeEntity {
     private boolean deleted;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "MEMBER_ID", nullable = false)
+    @JoinColumn(name = "USER_ID", nullable = false)
     private User user;
 
     @ManyToOne(fetch = LAZY)
@@ -41,9 +41,21 @@ public class Review extends BaseTimeEntity {
 
     }
 
+    public static Review emptyReview(UUID id, User user, Place place) {
+        return new Review(id, user, place);
+    }
+
     public Review(User user, Place place) {
         this.content = "꼭 가야하는 곳이에요.";
         this.deleted = false;
+        this.user = user;
+        this.place = place;
+    }
+
+    private Review(UUID id, User user, Place place) {
+        this.id = id;
+        this.content = "삭제된 리뷰";
+        this.deleted = true;
         this.user = user;
         this.place = place;
     }

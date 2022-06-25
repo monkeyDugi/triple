@@ -66,6 +66,10 @@ public class PointHistory extends BaseTimeEntity {
         this.place = place;
     }
 
+    public boolean isFirstReview() {
+        return action == ActionType.DELETE || action == null;
+    }
+
     public UUID getId() {
         return id;
     }

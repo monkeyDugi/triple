@@ -1,6 +1,8 @@
 package com.triple.service;
 
+import com.triple.domain.Place;
 import com.triple.domain.Review;
+import com.triple.domain.User;
 import com.triple.repository.ReviewRepository;
 import org.springframework.stereotype.Service;
 
@@ -14,8 +16,8 @@ public class ReviewService {
         this.reviewRepository = reviewRepository;
     }
 
-    public Review findById(UUID id) {
+    public Review findById(UUID id, User user, Place place) {
         return reviewRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("존재하지 않는 리뷰입니다."));
+                .orElse(Review.emptyReview(id, user, place));
     }
 }
