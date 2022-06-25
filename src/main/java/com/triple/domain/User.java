@@ -27,9 +27,19 @@ public class User extends BaseTimeEntity {
 
     }
 
+    public static User emptyUser(UUID id) {
+        return new User(id, true);
+    }
+
     public User(String accountId) {
         this.deleted = false;
         this.accountId = accountId;
+    }
+
+    public User(UUID id, boolean deleted) {
+        this.id = id;
+        this.deleted = false;
+        this.accountId = "탈퇴한 사용자";
     }
 
     public UUID getId() {

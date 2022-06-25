@@ -1,13 +1,15 @@
 package com.triple.service.point.calculator;
 
 import com.triple.domain.ActionType;
-import com.triple.domain.Place;
-import com.triple.domain.PointHistory;
-import com.triple.domain.Review;
 import com.triple.repository.PointHistoryRepository;
 import com.triple.web.dto.PointRequest;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
+/**
+ * 리뷰 작성, 추가, 삭제 시 포인트 적립 컨텍스트
+ */
 @Service
 public class CalculatorContext {
     private final PointHistoryRepository pointHistoryRepository;
@@ -16,31 +18,19 @@ public class CalculatorContext {
         this.pointHistoryRepository = pointHistoryRepository;
     }
 
-    public int calculate(PointRequest pointRequest, Review review, Place place) {
-        PointHistory prePointHistory = findPrePointHistory(review);
-
+    public int calculate(PointRequest pointRequest, UUID reviewId, UUID placeId) {
         if (pointRequest.getAction() == ActionType.ADD) {
-            return new AdditionCalculator()
-                    .calculate(pointRequest.getPhotoCount(), 0, isNotFirstReview(place), 0);
+            return new AdditionCalculator(pointHistoryRepository)
+                    .calculate(pointRequest.getPhotoCount(), null, placeId);
         }
         if (pointRequest.getAction() == ActionType.MOD) {
-            return new ModificationCalculator()
-                    .calculate(pointRequest.getPhotoCount(), prePointHistory.getPhotoCount(), true, 0);
+            return new ModificationCalculator(pointHistoryRepository)
+                    .calculate(pointRequest.getPhotoCount(), reviewId, null);
         }
         if (pointRequest.getAction() == ActionType.DELETE) {
-            return new DeletedCalculator()
-                    .calculate(0, 0, true, prePointHistory.getScore());
+            return new DeletedCalculator(pointHistoryRepository)
+                    .calculate(0, reviewId, null);
         }
         return 0;
-    }
-
-    private PointHistory findPrePointHistory(Review review) {
-        return pointHistoryRepository.findByReviewAndLatest(review)
-                .orElse(PointHistory.emptyPointHistory());
-    }
-
-    private boolean isNotFirstReview(Place place) {
-        return pointHistoryRepository.findByPlaceAndLatest(place)
-                .isPresent();
     }
 }

@@ -23,13 +23,15 @@ public class PointService {
     private final UserService userService;
     private final ReviewService reviewService;
     private final PlaceService placeService;
+    private final CalculatorContext calculatorContext;
 
-    public PointService(PointRepository pointRepository, PointHistoryRepository pointHistoryRepository, UserService userService, ReviewService reviewService, PlaceService placeService) {
+    public PointService(PointRepository pointRepository, PointHistoryRepository pointHistoryRepository, UserService userService, ReviewService reviewService, PlaceService placeService, CalculatorContext calculatorContext) {
         this.pointRepository = pointRepository;
         this.pointHistoryRepository = pointHistoryRepository;
         this.userService = userService;
         this.reviewService = reviewService;
         this.placeService = placeService;
+        this.calculatorContext = calculatorContext;
     }
 
     public void actionPoint(PointRequest pointRequest) {
@@ -38,7 +40,7 @@ public class PointService {
         Review review = reviewService.findById(pointRequest.getReviewId(), user, place);
 
         int score = calculateScore(pointRequest, review, place);
-        Point point = pointRepository.findByUser(user)
+        Point point = pointRepository.findByUserId(user.getId())
                 .orElse(new Point(user));
 
         point.updateScore(score);
@@ -48,8 +50,7 @@ public class PointService {
     }
 
     private int calculateScore(PointRequest pointRequest, Review review, Place place) {
-        return new CalculatorContext(pointHistoryRepository)
-                .calculate(pointRequest, review, place);
+        return calculatorContext.calculate(pointRequest, review.getId(), place.getId());
     }
 
     private void savePointHistory(PointRequest pointRequest, User user, Review review, Place place, int score) {

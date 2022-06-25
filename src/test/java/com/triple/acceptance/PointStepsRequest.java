@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static com.triple.util.CommonUtils.DEFAULT_CONTENT;
+import static com.triple.util.CommonUtils.CONTENT;
 
 public class PointStepsRequest {
     public static ExtractableResponse<Response> 포인트_적립_요청(RequestSpecification given, ActionType actionType,
@@ -21,7 +21,7 @@ public class PointStepsRequest {
         Map<String, Object> params = new HashMap<>();
         params.put("type", EventType.REVIEW);
         params.put("action", actionType);
-        params.put("content", DEFAULT_CONTENT);
+        params.put("content", CONTENT);
         params.put("attachedPhotoIds", attachedPhotoIds);
         params.put("reviewId", reviewId);
         params.put("userId", userId);
