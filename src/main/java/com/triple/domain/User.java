@@ -1,7 +1,6 @@
 package com.triple.domain;
 
 import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Where;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -10,7 +9,6 @@ import javax.persistence.Id;
 import java.util.Objects;
 import java.util.UUID;
 
-@Where(clause = "deleted = false")
 @Entity
 public class User extends BaseTimeEntity {
     @Id

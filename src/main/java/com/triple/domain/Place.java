@@ -1,7 +1,6 @@
 package com.triple.domain;
 
 import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Where;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -14,7 +13,6 @@ import java.util.UUID;
 
 import static javax.persistence.FetchType.LAZY;
 
-@Where(clause = "deleted = false")
 @Entity
 public class Place extends BaseTimeEntity {
     @Id
