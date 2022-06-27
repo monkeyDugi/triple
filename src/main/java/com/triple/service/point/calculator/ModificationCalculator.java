@@ -1,6 +1,8 @@
 package com.triple.service.point.calculator;
 
 import com.triple.domain.PointHistory;
+import com.triple.exception.BusinessException;
+import com.triple.exception.ExceptionCode;
 import com.triple.repository.PointHistoryRepository;
 
 import java.util.UUID;
@@ -16,8 +18,8 @@ public class ModificationCalculator implements ActionCalculator {
     }
 
     @Override
-    public int calculate(int photoCount, UUID reviewId, UUID unused) {
-        int prePhotoCount = findPrePhotoCount(reviewId);
+    public int calculate(int photoCount, UUID userId, UUID reviewId, UUID unused) {
+        int prePhotoCount = findPrePhotoCount(userId, reviewId);
 
         if (isDeletedAllPhoto(photoCount, prePhotoCount)) {
             return -1;
@@ -35,9 +37,9 @@ public class ModificationCalculator implements ActionCalculator {
         return prePhotoCount == 0 && photoCount > prePhotoCount;
     }
 
-    private int findPrePhotoCount(UUID reviewId) {
-        return pointHistoryRepository.findByReviewIdAndLatest(reviewId)
-                .orElse(PointHistory.emptyPointHistory())
+    private int findPrePhotoCount(UUID userId, UUID reviewId) {
+        return pointHistoryRepository.findByUserIdAndReviewIdLatest(userId, reviewId)
+                .orElseThrow(() -> new BusinessException(ExceptionCode.MEMBER_AUTHORIZATION))
                 .getPhotoCount();
     }
 }

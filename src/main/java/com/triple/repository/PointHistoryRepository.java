@@ -12,6 +12,7 @@ public interface PointHistoryRepository extends JpaRepository<PointHistory, UUID
     @Query("select h from PointHistory h where h.createDate = (select max(h.createDate) from PointHistory h where h.place.id = :placeId)")
     Optional<PointHistory> findByPlaceIdAndLatest(@Param("placeId") UUID placeId);
 
-    @Query("select h from PointHistory h where h.createDate = (select max(h.createDate) from PointHistory h where h.review.id = :reviewId)")
-    Optional<PointHistory> findByReviewIdAndLatest(@Param("reviewId") UUID reviewId);
+    @Query("select h from PointHistory h where h.createDate " +
+            "= (select max(h.createDate) from PointHistory h where h.user.id = :userId and h.review.id = :reviewId)")
+    Optional<PointHistory> findByUserIdAndReviewIdLatest(@Param("userId") UUID userId, @Param("reviewId") UUID reviewId);
 }

@@ -18,18 +18,18 @@ public class CalculatorContext {
         this.pointHistoryRepository = pointHistoryRepository;
     }
 
-    public int calculate(PointSaveRequest pointSaveRequest, UUID reviewId, UUID placeId) {
+    public int calculate(PointSaveRequest pointSaveRequest, UUID userId, UUID reviewId, UUID placeId) {
         if (pointSaveRequest.getAction() == ActionType.ADD) {
             return new AdditionCalculator(pointHistoryRepository)
-                    .calculate(pointSaveRequest.getPhotoCount(), null, placeId);
+                    .calculate(pointSaveRequest.getPhotoCount(), userId, null, placeId);
         }
         if (pointSaveRequest.getAction() == ActionType.MOD) {
             return new ModificationCalculator(pointHistoryRepository)
-                    .calculate(pointSaveRequest.getPhotoCount(), reviewId, null);
+                    .calculate(pointSaveRequest.getPhotoCount(), userId, reviewId, null);
         }
         if (pointSaveRequest.getAction() == ActionType.DELETE) {
             return new DeletedCalculator(pointHistoryRepository)
-                    .calculate(0, reviewId, null);
+                    .calculate(0, userId, reviewId, null);
         }
         return 0;
     }

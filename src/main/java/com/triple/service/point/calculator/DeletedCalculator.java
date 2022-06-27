@@ -1,6 +1,8 @@
 package com.triple.service.point.calculator;
 
 import com.triple.domain.PointHistory;
+import com.triple.exception.BusinessException;
+import com.triple.exception.ExceptionCode;
 import com.triple.repository.PointHistoryRepository;
 
 import java.util.UUID;
@@ -15,13 +17,13 @@ public class DeletedCalculator implements ActionCalculator {
         this.pointHistoryRepository = pointHistoryRepository;
     }
 
-    public int calculate(int unused1, UUID reviewId, UUID unused2) {
-        return - findPreScore(reviewId);
+    public int calculate(int unused1, UUID userId, UUID reviewId, UUID unused2) {
+        return - findPreScore(userId, reviewId);
     }
 
-    private int findPreScore(UUID reviewId) {
-        return pointHistoryRepository.findByReviewIdAndLatest(reviewId)
-                .orElse(PointHistory.emptyPointHistory())
+    private int findPreScore(UUID userId, UUID reviewId) {
+        return pointHistoryRepository.findByUserIdAndReviewIdLatest(userId, reviewId)
+                .orElseThrow(() -> new BusinessException(ExceptionCode.MEMBER_AUTHORIZATION))
                 .getScore();
     }
 }

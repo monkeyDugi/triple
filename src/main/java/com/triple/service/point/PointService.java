@@ -42,7 +42,7 @@ public class PointService {
         Place place = placeService.findById(pointSaveRequest.getPlaceId(), user);
         Review review = reviewService.findById(pointSaveRequest.getReviewId(), user, place);
 
-        int score = calculateScore(pointSaveRequest, review, place);
+        int score = calculateScore(pointSaveRequest, user, review, place);
         Point point = pointRepository.findByUserId(user.getId())
                 .orElse(new Point(user));
 
@@ -52,8 +52,8 @@ public class PointService {
         savePointHistory(pointSaveRequest, user, review, place, score);
     }
 
-    private int calculateScore(PointSaveRequest pointSaveRequest, Review review, Place place) {
-        return calculatorContext.calculate(pointSaveRequest, review.getId(), place.getId());
+    private int calculateScore(PointSaveRequest pointSaveRequest, User user, Review review, Place place) {
+        return calculatorContext.calculate(pointSaveRequest, user.getId(), review.getId(), place.getId());
     }
 
     private void savePointHistory(PointSaveRequest pointSaveRequest, User user, Review review, Place place, int score) {

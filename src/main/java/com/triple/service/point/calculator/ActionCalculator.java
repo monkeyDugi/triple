@@ -10,5 +10,5 @@ public interface ActionCalculator {
      * @param placeId: 리뷰 장소
      * @return 적립 및 차감될 포인트
      */
-    int calculate(int photoCount, UUID reviewId, UUID placeId);
+    int calculate(int photoCount, UUID userId, UUID reviewId, UUID placeId);
 }

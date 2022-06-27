@@ -192,7 +192,7 @@ public class PointServiceTest extends UnitTest {
         // when
         pointService.actionPoint(
                 createPointRequest(
-                        ActionType.MOD, deleteAttachedPhotoIds(review.getId()),
+                        ActionType.MOD, deleteAttachedPhotoIds(),
                         review.getId(), userReviewer.getId(), place.getId())
         );
         Point point = pointRepository.findByUserId(userReviewer.getId()).get();
@@ -220,7 +220,7 @@ public class PointServiceTest extends UnitTest {
         // when
         pointService.actionPoint(
                 createPointRequest(
-                        ActionType.MOD, deleteAttachedPhotoIds(review.getId()),
+                        ActionType.MOD, deleteAttachedPhotoIds(),
                         review.getId(), userSecondReviewer.getId(), place.getId())
         );
         Point point = pointRepository.findByUserId(userSecondReviewer.getId()).get();
@@ -239,7 +239,7 @@ public class PointServiceTest extends UnitTest {
 
         pointService.actionPoint(
                 createPointRequest(
-                        ActionType.ADD, deleteAttachedPhotoIds(review.getId()),
+                        ActionType.ADD, deleteAttachedPhotoIds(),
                         review.getId(), userReviewer.getId(), place.getId())
         );
 
@@ -267,7 +267,7 @@ public class PointServiceTest extends UnitTest {
 
         pointService.actionPoint(
                 createPointRequest(
-                        ActionType.ADD, deleteAttachedPhotoIds(review.getId()),
+                        ActionType.ADD, deleteAttachedPhotoIds(),
                         review.getId(), userSecondReviewer.getId(), place.getId())
         );
 
@@ -542,7 +542,47 @@ public class PointServiceTest extends UnitTest {
                 .hasMessage(ExceptionCode.MEMBER_INVALID.getMessage());
     }
 
-    private void createFirstReview(Place place) {
+    @Test
+    void 수정된_리뷰_권한_체크() {
+        // given
+        User userPlaceRegistrant = createUser(PLACE_REGISTRANT_ACCOUNT_ID);
+        Place place = createPlace(userPlaceRegistrant, ADDRESS1, PLACE_NAME);
+        Review review = createFirstReview(place);
+
+        User userSecondReviewer = createUser(REVIEWER_ACCOUNT_ID2);
+
+        // when
+        assertThatThrownBy(() -> pointService.actionPoint(
+                createPointRequest(
+                        ActionType.MOD, createAttachedPhotoIds(review),
+                        review.getId(), userSecondReviewer.getId(), place.getId())))
+                // then
+                .isInstanceOf(BusinessException.class)
+                .hasMessage(ExceptionCode.MEMBER_AUTHORIZATION.getMessage());
+
+    }
+
+    @Test
+    void 삭제된_리뷰_권한_체크() {
+        // given
+        User userPlaceRegistrant = createUser(PLACE_REGISTRANT_ACCOUNT_ID);
+        Place place = createPlace(userPlaceRegistrant, ADDRESS1, PLACE_NAME);
+        Review review = createFirstReview(place);
+
+        User userSecondReviewer = createUser(REVIEWER_ACCOUNT_ID2);
+
+        // when
+        assertThatThrownBy(() -> pointService.actionPoint(
+                createPointRequest(
+                        ActionType.DELETE, createAttachedPhotoIds(review),
+                        review.getId(), userSecondReviewer.getId(), place.getId())))
+                // then
+                .isInstanceOf(BusinessException.class)
+                .hasMessage(ExceptionCode.MEMBER_AUTHORIZATION.getMessage());
+
+    }
+
+    private Review createFirstReview(Place place) {
         User userFirstReviewer = createUser(REVIEWER_ACCOUNT_ID1);
         Review review = createReview(userFirstReviewer, place);
 
@@ -551,6 +591,8 @@ public class PointServiceTest extends UnitTest {
         );
 
         pointService.actionPoint(pointSaveRequest);
+
+        return review;
     }
 
     private User createUser(String accountId) {
@@ -585,7 +627,7 @@ public class PointServiceTest extends UnitTest {
                 .collect(Collectors.toList());
     }
 
-    private List<UUID> deleteAttachedPhotoIds(UUID reviewId) {
+    private List<UUID> deleteAttachedPhotoIds() {
         return new ArrayList<>();
     }
 }

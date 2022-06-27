@@ -17,7 +17,7 @@ public class AdditionCalculator implements ActionCalculator {
     }
 
     @Override
-    public int calculate(int photoCount, UUID unused, UUID placeId) {
+    public int calculate(int photoCount, UUID userId, UUID unused, UUID placeId) {
         int contentScore = calculateContentScore(photoCount);
         int bonusScore = calculateBonusScore(isFirstReview(placeId));
 
