@@ -37,7 +37,7 @@ public class Place extends BaseTimeEntity {
     private boolean deleted;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "MEMBER_ID", nullable = false)
+    @JoinColumn(name = "USER_ID", nullable = false)
     private User user;
 
     protected Place() {
