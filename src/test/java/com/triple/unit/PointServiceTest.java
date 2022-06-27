@@ -7,7 +7,6 @@ import com.triple.domain.Place;
 import com.triple.domain.Point;
 import com.triple.domain.Review;
 import com.triple.domain.User;
-import com.triple.repository.PhotoRepository;
 import com.triple.repository.PlaceRepository;
 import com.triple.repository.PointRepository;
 import com.triple.repository.ReviewRepository;
@@ -54,9 +53,6 @@ public class PointServiceTest extends UnitTest {
 
     @Autowired
     private PlaceRepository placeRepository;
-
-    @Autowired
-    private PhotoRepository photoRepository;
 
     @Test
     void 첫_리뷰_내용과_사진_첨부_리뷰_생성_이벤트_포인트_적립() {
@@ -563,10 +559,9 @@ public class PointServiceTest extends UnitTest {
     }
 
     private List<UUID> createAttachedPhotoIds(Review review) {
-        List<Photo> photos = photoRepository.saveAll(Arrays.asList(
+        List<Photo> photos = Arrays.asList(
                 new Photo(ORIGIN_FILE_NAME, STORE_FILE_NAME1, review),
                 new Photo(ORIGIN_FILE_NAME, STORE_FILE_NAME2, review)
-                )
         );
         return photos.stream()
                 .map(Photo::getId)
@@ -574,7 +569,6 @@ public class PointServiceTest extends UnitTest {
     }
 
     private List<UUID> deleteAttachedPhotoIds(UUID reviewId) {
-        photoRepository.deleteByReviewId(reviewId);
         return new ArrayList<>();
     }
 }

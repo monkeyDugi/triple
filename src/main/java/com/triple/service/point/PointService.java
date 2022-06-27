@@ -57,8 +57,7 @@ public class PointService {
     }
 
     private void savePointHistory(PointSaveRequest pointSaveRequest, User user, Review review, Place place, int score) {
-        PointHistory pointHistory = new PointHistory(score, pointSaveRequest.getAction(),
-                pointSaveRequest.getContent(), pointSaveRequest.getPhotoCount(),
+        PointHistory pointHistory = new PointHistory(score, pointSaveRequest.getAction(), pointSaveRequest.getPhotoCount(),
                 review, user, place);
         pointHistoryRepository.save(pointHistory);
     }

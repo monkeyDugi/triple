@@ -31,9 +31,6 @@ public class PointHistory extends BaseTimeEntity {
     private ActionType action;
 
     @Column(nullable = false)
-    private String content;
-
-    @Column(nullable = false)
     private int photoCount;
 
     @ManyToOne(fetch = LAZY)
@@ -53,13 +50,12 @@ public class PointHistory extends BaseTimeEntity {
     }
 
     public static PointHistory emptyPointHistory() {
-        return new PointHistory(0, null, null, 0, null, null, null);
+        return new PointHistory(0, null, 0, null, null, null);
     }
 
-    public PointHistory(int score, ActionType action, String content, int photoCount, Review review, User user, Place place) {
+    public PointHistory(int score, ActionType action, int photoCount, Review review, User user, Place place) {
         this.score = score;
         this.action = action;
-        this.content = content;
         this.photoCount = photoCount;
         this.review = review;
         this.user = user;
@@ -80,10 +76,6 @@ public class PointHistory extends BaseTimeEntity {
 
     public ActionType getAction() {
         return action;
-    }
-
-    public String getContent() {
-        return content;
     }
 
     public int getPhotoCount() {
@@ -109,13 +101,13 @@ public class PointHistory extends BaseTimeEntity {
         PointHistory that = (PointHistory) o;
         return getScore() == that.getScore() && getPhotoCount() == that.getPhotoCount() &&
                 Objects.equals(getId(), that.getId()) && getAction() == that.getAction() &&
-                Objects.equals(getContent(), that.getContent()) && Objects.equals(getReview(), that.getReview()) &&
-                Objects.equals(getUser(), that.getUser()) && Objects.equals(getPlace(), that.getPlace());
+                Objects.equals(getReview(), that.getReview()) && Objects.equals(getUser(), that.getUser()) &&
+                Objects.equals(getPlace(), that.getPlace());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getScore(), getAction(), getContent(), getPhotoCount(), getReview(), getUser(), getPlace());
+        return Objects.hash(getId(), getScore(), getAction(), getPhotoCount(), getReview(), getUser(), getPlace());
     }
 
     @Override
@@ -124,7 +116,6 @@ public class PointHistory extends BaseTimeEntity {
                 "id=" + id +
                 ", score=" + score +
                 ", action=" + action +
-                ", content='" + content + '\'' +
                 ", photoCount=" + photoCount +
                 ", review=" + review +
                 ", user=" + user +

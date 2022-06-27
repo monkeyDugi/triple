@@ -25,7 +25,7 @@ public class Point extends BaseTimeEntity {
     private int score;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "USER_ID", nullable = false)
+    @JoinColumn(name = "USER_ID", nullable = false, unique = true)
     private User user;
 
     protected Point() {

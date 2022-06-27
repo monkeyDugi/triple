@@ -5,7 +5,6 @@ import com.triple.domain.Photo;
 import com.triple.domain.Place;
 import com.triple.domain.Review;
 import com.triple.domain.User;
-import com.triple.repository.PhotoRepository;
 import com.triple.repository.PlaceRepository;
 import com.triple.repository.ReviewRepository;
 import com.triple.repository.UserRepository;
@@ -46,9 +45,6 @@ public class PointAcceptanceTest extends AcceptanceTest {
 
     @Autowired
     private PlaceRepository placeRepository;
-
-    @Autowired
-    private PhotoRepository photoRepository;
 
     /**
      * Given 리뷰 내용과 사진 첨부 리뷰 작성됨
@@ -167,10 +163,9 @@ public class PointAcceptanceTest extends AcceptanceTest {
     }
 
     private List<UUID> 리뷰_이미지_생성됨(Review review) {
-        List<Photo> photos = photoRepository.saveAll(Arrays.asList(
+        List<Photo> photos = Arrays.asList(
                 new Photo(ORIGIN_FILE_NAME, STORE_FILE_NAME1, review),
                 new Photo(ORIGIN_FILE_NAME, STORE_FILE_NAME2, review)
-                )
         );
         return photos.stream()
                 .map(Photo::getId)
@@ -178,7 +173,6 @@ public class PointAcceptanceTest extends AcceptanceTest {
     }
 
     private List<UUID> 리뷰_이미지_삭제됨(UUID reviewId) {
-        photoRepository.deleteByReviewId(reviewId);
         return new ArrayList<>();
     }
 }

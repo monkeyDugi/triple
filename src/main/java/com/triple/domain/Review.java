@@ -23,8 +23,10 @@ public class Review extends BaseTimeEntity {
     private UUID id;
 
     @Lob
+    @Column(nullable = false)
     private String content;
 
+    @Column(nullable = false)
     private boolean deleted;
 
     @ManyToOne(fetch = LAZY)
