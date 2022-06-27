@@ -7,7 +7,8 @@ import static org.springframework.http.HttpStatus.FORBIDDEN;
 
 public enum ExceptionCode {
     MEMBER_INVALID(BAD_REQUEST, "MEMBER_001", "존재하지 않는 사용자입니다."),
-    MEMBER_AUTHORIZATION(FORBIDDEN, "MEMBER_002", "권한이 불충분합니다.");
+    MEMBER_AUTHORIZATION(FORBIDDEN, "MEMBER_002", "권한이 불충분합니다."),
+    NOT_SUPPORTED_TYPE(BAD_REQUEST, "EVEN_TYPE_001", "지원하지 않는 이벤트 타입입니다.");
 
     private final HttpStatus status;
     private final String code;

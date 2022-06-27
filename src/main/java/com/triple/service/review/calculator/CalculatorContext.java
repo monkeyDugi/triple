@@ -1,4 +1,4 @@
-package com.triple.service.point.calculator;
+package com.triple.service.review.calculator;
 
 import com.triple.domain.ActionType;
 import com.triple.repository.PointHistoryRepository;

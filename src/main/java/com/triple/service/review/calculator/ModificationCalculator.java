@@ -1,6 +1,5 @@
-package com.triple.service.point.calculator;
+package com.triple.service.review.calculator;
 
-import com.triple.domain.PointHistory;
 import com.triple.exception.BusinessException;
 import com.triple.exception.ExceptionCode;
 import com.triple.repository.PointHistoryRepository;

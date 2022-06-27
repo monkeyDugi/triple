@@ -1,4 +1,4 @@
-package com.triple.service.point.calculator;
+package com.triple.service.review.calculator;
 
 import java.util.UUID;
 

@@ -13,7 +13,7 @@ import com.triple.repository.PlaceRepository;
 import com.triple.repository.PointRepository;
 import com.triple.repository.ReviewRepository;
 import com.triple.repository.UserRepository;
-import com.triple.service.point.PointService;
+import com.triple.service.PointServiceRouter;
 import com.triple.util.UnitTest;
 import com.triple.web.dto.PointResponse;
 import com.triple.web.dto.PointSaveRequest;
@@ -41,12 +41,12 @@ import static com.triple.util.CommonUtils.STORE_FILE_NAME2;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-public class PointServiceTest extends UnitTest {
+public class ReviewPointServiceTest extends UnitTest {
     @Autowired
     private PointRepository pointRepository;
 
     @Autowired
-    private PointService pointService;
+    private PointServiceRouter reviewPointService;
 
     @Autowired
     private UserRepository userRepository;
@@ -71,7 +71,7 @@ public class PointServiceTest extends UnitTest {
         );
 
         // when
-        pointService.actionPoint(pointSaveRequest);
+        reviewPointService.actionPoint(pointSaveRequest);
         Point point = pointRepository.findByUserId(userReviewer.getId()).get();
 
         // then
@@ -92,7 +92,7 @@ public class PointServiceTest extends UnitTest {
         );
 
         // when
-        pointService.actionPoint(pointSaveRequest);
+        reviewPointService.actionPoint(pointSaveRequest);
         Point point = pointRepository.findByUserId(userReviewer.getId()).get();
 
         // then
@@ -115,7 +115,7 @@ public class PointServiceTest extends UnitTest {
         );
 
         // when
-        pointService.actionPoint(pointSaveRequest);
+        reviewPointService.actionPoint(pointSaveRequest);
         Point point = pointRepository.findByUserId(userSecondReviewer.getId()).get();
 
         // then
@@ -138,7 +138,7 @@ public class PointServiceTest extends UnitTest {
         );
 
         // when
-        pointService.actionPoint(pointSaveRequest);
+        reviewPointService.actionPoint(pointSaveRequest);
         Point point = pointRepository.findByUserId(userSecondReviewer.getId()).get();
 
         // then
@@ -160,7 +160,7 @@ public class PointServiceTest extends UnitTest {
                 ActionType.ADD, createAttachedPhotoIds(reviewPlace1), reviewPlace1.getId(), userReviewer.getId(), place1.getId()
         );
 
-        pointService.actionPoint(pointSaveRequestPlace1);
+        reviewPointService.actionPoint(pointSaveRequestPlace1);
 
         Review reviewPlace2 = createReview(userReviewer, place2);
         PointSaveRequest pointSaveRequestPlace2 = createPointRequest(
@@ -168,7 +168,7 @@ public class PointServiceTest extends UnitTest {
         );
 
         // when
-        pointService.actionPoint(pointSaveRequestPlace2);
+        reviewPointService.actionPoint(pointSaveRequestPlace2);
         Point point = pointRepository.findByUserId(userReviewer.getId()).get();
 
         // then
@@ -183,14 +183,14 @@ public class PointServiceTest extends UnitTest {
         User userReviewer = createUser(REVIEWER_ACCOUNT_ID1);
         Review review = createReview(userReviewer, place);
 
-        pointService.actionPoint(
+        reviewPointService.actionPoint(
                 createPointRequest(
                         ActionType.ADD, createAttachedPhotoIds(review),
                         review.getId(), userReviewer.getId(), place.getId())
         );
 
         // when
-        pointService.actionPoint(
+        reviewPointService.actionPoint(
                 createPointRequest(
                         ActionType.MOD, deleteAttachedPhotoIds(),
                         review.getId(), userReviewer.getId(), place.getId())
@@ -211,14 +211,14 @@ public class PointServiceTest extends UnitTest {
         User userSecondReviewer = createUser(REVIEWER_ACCOUNT_ID2);
         Review review = createReview(userSecondReviewer, place);
 
-        pointService.actionPoint(
+        reviewPointService.actionPoint(
                 createPointRequest(
                         ActionType.ADD, createAttachedPhotoIds(review),
                         review.getId(), userSecondReviewer.getId(), place.getId())
         );
 
         // when
-        pointService.actionPoint(
+        reviewPointService.actionPoint(
                 createPointRequest(
                         ActionType.MOD, deleteAttachedPhotoIds(),
                         review.getId(), userSecondReviewer.getId(), place.getId())
@@ -237,14 +237,14 @@ public class PointServiceTest extends UnitTest {
         User userReviewer = createUser(REVIEWER_ACCOUNT_ID1);
         Review review = createReview(userReviewer, place);
 
-        pointService.actionPoint(
+        reviewPointService.actionPoint(
                 createPointRequest(
                         ActionType.ADD, deleteAttachedPhotoIds(),
                         review.getId(), userReviewer.getId(), place.getId())
         );
 
         // when
-        pointService.actionPoint(
+        reviewPointService.actionPoint(
                 createPointRequest(
                         ActionType.MOD, createAttachedPhotoIds(review),
                         review.getId(), userReviewer.getId(), place.getId())
@@ -265,14 +265,14 @@ public class PointServiceTest extends UnitTest {
         User userSecondReviewer = createUser(REVIEWER_ACCOUNT_ID2);
         Review review = createReview(userSecondReviewer, place);
 
-        pointService.actionPoint(
+        reviewPointService.actionPoint(
                 createPointRequest(
                         ActionType.ADD, deleteAttachedPhotoIds(),
                         review.getId(), userSecondReviewer.getId(), place.getId())
         );
 
         // when
-        pointService.actionPoint(
+        reviewPointService.actionPoint(
                 createPointRequest(
                         ActionType.MOD, createAttachedPhotoIds(review),
                         review.getId(), userSecondReviewer.getId(), place.getId())
@@ -296,12 +296,12 @@ public class PointServiceTest extends UnitTest {
         Review review2 = createReview(userReviewer, place2);
 
         List<UUID> review1AttachedPhotoIds = createAttachedPhotoIds(review1);
-        pointService.actionPoint(
+        reviewPointService.actionPoint(
                 createPointRequest(
                         ActionType.ADD, review1AttachedPhotoIds,
                         review1.getId(), userReviewer.getId(), place1.getId())
         );
-        pointService.actionPoint(
+        reviewPointService.actionPoint(
                 createPointRequest(
                         ActionType.ADD, createAttachedPhotoIds(review2),
                         review2.getId(), userReviewer.getId(), place2.getId())
@@ -309,7 +309,7 @@ public class PointServiceTest extends UnitTest {
         deleteReview(review1);
 
         // when
-        pointService.actionPoint(
+        reviewPointService.actionPoint(
                 createPointRequest(
                         ActionType.DELETE, review1AttachedPhotoIds,
                         review1.getId(), userReviewer.getId(), place1.getId())
@@ -329,7 +329,7 @@ public class PointServiceTest extends UnitTest {
         Review review = createReview(userReviewer, place);
 
         List<UUID> review1AttachedPhotoIds = createAttachedPhotoIds(review);
-        pointService.actionPoint(
+        reviewPointService.actionPoint(
                 createPointRequest(
                         ActionType.ADD, review1AttachedPhotoIds,
                         review.getId(), userReviewer.getId(), place.getId())
@@ -337,7 +337,7 @@ public class PointServiceTest extends UnitTest {
         deleteReview(review);
 
         // when
-        pointService.actionPoint(
+        reviewPointService.actionPoint(
                 createPointRequest(
                         ActionType.DELETE, review1AttachedPhotoIds,
                         review.getId(), userReviewer.getId(), place.getId())
@@ -359,7 +359,7 @@ public class PointServiceTest extends UnitTest {
         Review review = createReview(userSecondReviewer, place);
 
         List<UUID> review1AttachedPhotoIds = createAttachedPhotoIds(review);
-        pointService.actionPoint(
+        reviewPointService.actionPoint(
                 createPointRequest(
                         ActionType.ADD, review1AttachedPhotoIds,
                         review.getId(), userSecondReviewer.getId(), place.getId())
@@ -367,7 +367,7 @@ public class PointServiceTest extends UnitTest {
         deleteReview(review);
 
         // when
-        pointService.actionPoint(
+        reviewPointService.actionPoint(
                 createPointRequest(
                         ActionType.DELETE, review1AttachedPhotoIds,
                         review.getId(), userSecondReviewer.getId(), place.getId())
@@ -392,12 +392,12 @@ public class PointServiceTest extends UnitTest {
         Review review2 = createReview(userSecondReviewer, place2);
 
         List<UUID> review1AttachedPhotoIds = createAttachedPhotoIds(review1);
-        pointService.actionPoint(
+        reviewPointService.actionPoint(
                 createPointRequest(
                         ActionType.ADD, review1AttachedPhotoIds,
                         review1.getId(), userSecondReviewer.getId(), place1.getId())
         );
-        pointService.actionPoint(
+        reviewPointService.actionPoint(
                 createPointRequest(
                         ActionType.ADD, createAttachedPhotoIds(review2),
                         review2.getId(), userSecondReviewer.getId(), place2.getId())
@@ -405,7 +405,7 @@ public class PointServiceTest extends UnitTest {
         deleteReview(review1);
 
         // when
-        pointService.actionPoint(
+        reviewPointService.actionPoint(
                 createPointRequest(
                         ActionType.DELETE, review1AttachedPhotoIds,
                         review1.getId(), userSecondReviewer.getId(), place1.getId())
@@ -427,13 +427,13 @@ public class PointServiceTest extends UnitTest {
 
         Review review1 = createReview(userFirstReviewer, place);
         List<UUID> review1AttachedPhotoIds = createAttachedPhotoIds(review1);
-        pointService.actionPoint(
+        reviewPointService.actionPoint(
                 createPointRequest(
                         ActionType.ADD, review1AttachedPhotoIds,
                         review1.getId(), userFirstReviewer.getId(), place.getId())
         );
         deleteReview(review1);
-        pointService.actionPoint(
+        reviewPointService.actionPoint(
                 createPointRequest(
                         ActionType.DELETE, review1AttachedPhotoIds,
                         review1.getId(), userFirstReviewer.getId(), place.getId())
@@ -441,7 +441,7 @@ public class PointServiceTest extends UnitTest {
 
         // when
         Review review2 = createReview(userSecondReviewer, place);
-        pointService.actionPoint(
+        reviewPointService.actionPoint(
                 createPointRequest(
                         ActionType.ADD, createAttachedPhotoIds(review2),
                         review2.getId(), userSecondReviewer.getId(), place.getId())
@@ -466,7 +466,7 @@ public class PointServiceTest extends UnitTest {
 
         Review review1 = createReview(userFirstReviewer, place);
         List<UUID> review1AttachedPhotoIds = createAttachedPhotoIds(review1);
-        pointService.actionPoint(
+        reviewPointService.actionPoint(
                 createPointRequest(
                         ActionType.ADD, review1AttachedPhotoIds,
                         review1.getId(), userFirstReviewer.getId(), place.getId())
@@ -474,14 +474,14 @@ public class PointServiceTest extends UnitTest {
 
         // when
         Review review2 = createReview(userSecondReviewer, place);
-        pointService.actionPoint(
+        reviewPointService.actionPoint(
                 createPointRequest(
                         ActionType.ADD, createAttachedPhotoIds(review2),
                         review2.getId(), userSecondReviewer.getId(), place.getId())
         );
 
         deleteReview(review1);
-        pointService.actionPoint(
+        reviewPointService.actionPoint(
                 createPointRequest(
                         ActionType.DELETE, review1AttachedPhotoIds,
                         review1.getId(), userFirstReviewer.getId(), place.getId())
@@ -507,10 +507,10 @@ public class PointServiceTest extends UnitTest {
         PointSaveRequest pointSaveRequest = createPointRequest(
                 ActionType.ADD, createAttachedPhotoIds(review), review.getId(), userReviewer.getId(), place.getId()
         );
-        pointService.actionPoint(pointSaveRequest);
+        reviewPointService.actionPoint(pointSaveRequest);
 
         // when
-        PointResponse pointResponse = pointService.findPoint(userReviewer.getId());
+        PointResponse pointResponse = reviewPointService.findPoint(userReviewer.getId());
 
         // then
         assertThat(pointResponse.getScore()).isEqualTo(3);
@@ -522,7 +522,7 @@ public class PointServiceTest extends UnitTest {
         User userReviewer = createUser(REVIEWER_ACCOUNT_ID1);
 
         // when
-        PointResponse pointResponse = pointService.findPoint(userReviewer.getId());
+        PointResponse pointResponse = reviewPointService.findPoint(userReviewer.getId());
 
         // then
         assertThat(pointResponse.getScore()).isEqualTo(0);
@@ -536,7 +536,7 @@ public class PointServiceTest extends UnitTest {
         );
 
         // when
-        assertThatThrownBy(() -> pointService.actionPoint(pointSaveRequest))
+        assertThatThrownBy(() -> reviewPointService.actionPoint(pointSaveRequest))
                 // then
                 .isInstanceOf(BusinessException.class)
                 .hasMessage(ExceptionCode.MEMBER_INVALID.getMessage());
@@ -552,7 +552,7 @@ public class PointServiceTest extends UnitTest {
         User userSecondReviewer = createUser(REVIEWER_ACCOUNT_ID2);
 
         // when
-        assertThatThrownBy(() -> pointService.actionPoint(
+        assertThatThrownBy(() -> reviewPointService.actionPoint(
                 createPointRequest(
                         ActionType.MOD, createAttachedPhotoIds(review),
                         review.getId(), userSecondReviewer.getId(), place.getId())))
@@ -572,7 +572,7 @@ public class PointServiceTest extends UnitTest {
         User userSecondReviewer = createUser(REVIEWER_ACCOUNT_ID2);
 
         // when
-        assertThatThrownBy(() -> pointService.actionPoint(
+        assertThatThrownBy(() -> reviewPointService.actionPoint(
                 createPointRequest(
                         ActionType.DELETE, createAttachedPhotoIds(review),
                         review.getId(), userSecondReviewer.getId(), place.getId())))
@@ -590,7 +590,7 @@ public class PointServiceTest extends UnitTest {
                 ActionType.ADD, createAttachedPhotoIds(review), review.getId(), userFirstReviewer.getId(), place.getId()
         );
 
-        pointService.actionPoint(pointSaveRequest);
+        reviewPointService.actionPoint(pointSaveRequest);
 
         return review;
     }
