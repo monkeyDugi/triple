@@ -168,7 +168,7 @@ create index place_id on point_history (place_id);
 create index review_id on point_history (review_id);
 create index create_date on point_history (create_date);
 
-/* 적립금 부여 히스토리 테이블 생성 */
+/* 리뷰 사진 테이블 생성 */
 create table photo (
 	id varchar(255) not null,
 	review_id binary(16) not null,
