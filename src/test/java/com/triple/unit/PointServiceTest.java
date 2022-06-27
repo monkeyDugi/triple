@@ -7,6 +7,8 @@ import com.triple.domain.Place;
 import com.triple.domain.Point;
 import com.triple.domain.Review;
 import com.triple.domain.User;
+import com.triple.exception.BusinessException;
+import com.triple.exception.ExceptionCode;
 import com.triple.repository.PlaceRepository;
 import com.triple.repository.PointRepository;
 import com.triple.repository.ReviewRepository;
@@ -37,6 +39,7 @@ import static com.triple.util.CommonUtils.REVIEWER_ACCOUNT_ID2;
 import static com.triple.util.CommonUtils.STORE_FILE_NAME1;
 import static com.triple.util.CommonUtils.STORE_FILE_NAME2;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class PointServiceTest extends UnitTest {
     @Autowired
@@ -523,6 +526,20 @@ public class PointServiceTest extends UnitTest {
 
         // then
         assertThat(pointResponse.getScore()).isEqualTo(0);
+    }
+
+    @Test
+    void 사용자가_존재하지_않는_경우() {
+        // given
+        PointSaveRequest pointSaveRequest = createPointRequest(
+                ActionType.ADD, createAttachedPhotoIds(null), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID()
+        );
+
+        // when
+        assertThatThrownBy(() -> pointService.actionPoint(pointSaveRequest))
+                // then
+                .isInstanceOf(BusinessException.class)
+                .hasMessage(ExceptionCode.MEMBER_INVALID.getMessage());
     }
 
     private void createFirstReview(Place place) {

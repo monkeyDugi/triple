@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static com.triple.acceptance.PointStepsAssert.*;
 import static com.triple.acceptance.PointStepsAssert.포인트_적립됨;
 import static com.triple.acceptance.PointStepsAssert.포인트_조회됨;
 import static com.triple.acceptance.PointStepsRequest.포인트_적립_요청;
@@ -143,6 +144,18 @@ public class PointAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 포인트_조회_요청(given(), userReviewer.getId());
 
         포인트_조회됨(response, 0);
+    }
+
+    /**
+     * When 포인트 적립 요청
+     * Then 포인트 적립안됨
+     */
+    @Test
+    void 사용자가_존재하지_않는_경우() {
+        List<UUID> attachedPhotoIds = new ArrayList<>();
+        ExtractableResponse<Response> response = 포인트_적립_요청(given(), ActionType.ADD, attachedPhotoIds, UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID());
+
+        포인트_적립안됨(response);
     }
 
     private User 회원_생성됨(String accountId) {

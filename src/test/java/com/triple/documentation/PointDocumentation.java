@@ -76,9 +76,9 @@ public class PointDocumentation extends Documentation {
                 fieldWithPath("userId").description("사용자 ID (UUID)")
         };
         FieldDescriptor[] responseFieldDescriptors = {
-                fieldWithPath("id").description("포인트 ID (UUID)"),
-                fieldWithPath("score").description("적립 포인트"),
-                fieldWithPath("userId").description("사용자 ID (UUID)")
+                fieldWithPath("data.id").description("포인트 ID (UUID)"),
+                fieldWithPath("data.score").description("적립 포인트"),
+                fieldWithPath("data.userId").description("사용자 ID (UUID)")
         };
 
         포인트_조회_요청(givenRestDocsRequestAndResponseFields("point-find", requestFieldDescriptors, responseFieldDescriptors), userReviewer.getId());

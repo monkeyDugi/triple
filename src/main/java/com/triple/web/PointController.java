@@ -1,6 +1,7 @@
 package com.triple.web;
 
 import com.triple.service.point.PointService;
+import com.triple.web.dto.ApiResponse;
 import com.triple.web.dto.PointFindRequest;
 import com.triple.web.dto.PointResponse;
 import com.triple.web.dto.PointSaveRequest;
@@ -26,8 +27,8 @@ public class PointController {
     }
 
     @GetMapping(value = "/point", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<PointResponse> findPoint(@RequestBody PointFindRequest pointFindRequest) {
+    public ResponseEntity<ApiResponse<PointResponse>> findPoint(@RequestBody PointFindRequest pointFindRequest) {
         PointResponse pointResponse = pointService.findPoint(pointFindRequest.getUserId());
-        return ResponseEntity.ok(pointResponse);
+        return ResponseEntity.ok(ApiResponse.success(pointResponse));
     }
 }
